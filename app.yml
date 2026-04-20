@@ -1,0 +1,14 @@
+# app.yml
+name: DevDox
+description: Auto-generates Architecture Decision Records from your PRs
+url: https://devdox.dev
+
+default_events:
+  - pull_request
+  - issue_comment
+
+default_permissions:
+  contents: read
+  issues: write
+  pull_requests: write
+  metadata: read

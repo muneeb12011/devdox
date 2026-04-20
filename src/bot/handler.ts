@@ -1,0 +1,47 @@
+import Anthropic from "@anthropic-ai/sdk";
+import { Octokit } from "@octokit/rest";
+import { analyzePR } from "../services/analyzePR";
+import { formatADRComment } from "./formatter";
+import { AnalysisResult } from "../schemas/analysis.schema";
+
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+export async function handlePROpened({ payload }: { payload: any }) {
+  const pr = payload.pull_request;
+  const owner = payload.repository.owner.login;
+  const repo = payload.repository.name;
+  const pull_number = pr.number;
+  const prUrl = pr.html_url;
+
+  console.log(`[DevDox] PR opened: ${prUrl}`);
+
+  const thinkingComment = await octokit.issues.createComment({
+    owner,
+    repo,
+    issue_number: pull_number,
+    body: `## 🤖 DevDox is analyzing this PR...\n\n> Fetching commits, linked tickets, and discussions. ADR will appear here in ~15 seconds.`,
+  });
+
+  try {
+    const result = await analyzePR(prUrl) as AnalysisResult;
+    const commentBody = formatADRComment(result, prUrl);
+
+    await octokit.issues.updateComment({
+      owner,
+      repo,
+      comment_id: thinkingComment.data.id,
+      body: commentBody,
+    });
+
+    console.log(`[DevDox] ADR posted for PR #${pull_number}`);
+  } catch (err: any) {
+    console.error(`[DevDox] Analysis failed: ${err.message}`);
+
+    await octokit.issues.updateComment({
+      owner,
+      repo,
+      comment_id: thinkingComment.data.id,
+      body: `## 🤖 DevDox — Analysis Failed\n\n> ❌ ${err.message}\n\nPlease check your configuration or try again.`,
+    });
+  }
+}
