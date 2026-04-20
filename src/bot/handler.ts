@@ -1,10 +1,25 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { Octokit } from "@octokit/rest";
+import { createAppAuth } from "@octokit/auth-app";
 import { analyzePR } from "../services/analyzePR";
 import { formatADRComment } from "./formatter";
 import { AnalysisResult } from "../schemas/analysis.schema";
 
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+async function getInstallationOctokit(installationId: number) {
+  const rawKey = process.env.PRIVATE_KEY!
+    .replace(/\\n/g, "\n")
+    .replace(/^"/, "")
+    .replace(/"$/, "")
+    .trim();
+
+  const auth = createAppAuth({
+    appId: Number(process.env.APP_ID!),
+    privateKey: rawKey,
+    installationId,
+  });
+
+  const { token } = await auth({ type: "installation" });
+  return new Octokit({ auth: token });
+}
 
 export async function handlePROpened({ payload }: { payload: any }) {
   const pr = payload.pull_request;
@@ -12,8 +27,11 @@ export async function handlePROpened({ payload }: { payload: any }) {
   const repo = payload.repository.name;
   const pull_number = pr.number;
   const prUrl = pr.html_url;
+  const installationId = payload.installation.id;
 
   console.log(`[DevDox] PR opened: ${prUrl}`);
+
+  const octokit = await getInstallationOctokit(installationId);
 
   const thinkingComment = await octokit.issues.createComment({
     owner,
