@@ -4,10 +4,11 @@ let redis: Redis | null = null;
 
 function getRedis(): Redis {
   if (!redis) {
-    redis = new Redis({
-      url: process.env.REDIS_URL!,
-      token: process.env.REDIS_TOKEN!,
-    });
+    const url = process.env.REDIS_URL;
+    const token = process.env.REDIS_TOKEN;
+    console.log("[Redis] URL:", url);
+    console.log("[Redis] TOKEN first 20:", token?.substring(0, 20));
+    redis = new Redis({ url: url!, token: token! });
   }
   return redis;
 }
