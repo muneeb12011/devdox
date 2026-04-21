@@ -1,5 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
+console.log("ENV CHECK - REDIS_TOKEN first 20:", process.env.REDIS_TOKEN?.substring(0, 20));
+console.log("ENV CHECK - REDIS_URL:", process.env.REDIS_URL);
 import express from "express";
 import { Webhooks, createNodeMiddleware } from "@octokit/webhooks";
 import { handlePROpened } from "./handler";
