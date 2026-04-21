@@ -1,4 +1,5 @@
-import "dotenv/config";
+import * as dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import { Webhooks, createNodeMiddleware } from "@octokit/webhooks";
 import { handlePROpened } from "./handler";
