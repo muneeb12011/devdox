@@ -31,7 +31,16 @@ export async function handlePROpened({ payload }: { payload: any }) {
 
   console.log(`[DevDox] PR opened: ${prUrl}`);
 
-  const { octokit, token } = await getInstallationAuth(installationId);
+  let octokit: Octokit, token: string;
+  try {
+    const auth = await getInstallationAuth(installationId);
+    octokit = auth.octokit;
+    token = auth.token;
+    console.log('[DevDox] Installation token first 20:', token.substring(0, 20));
+  } catch (err: any) {
+    console.error('[DevDox] getInstallationAuth FAILED:', err.message);
+    throw err;
+  }
 
   const thinkingComment = await octokit.issues.createComment({
     owner,

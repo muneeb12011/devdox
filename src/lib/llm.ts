@@ -1,4 +1,3 @@
-// src/lib/llm.ts
 import axios from "axios";
 import pRetry from "p-retry";
 
@@ -41,7 +40,7 @@ Be brutally concise. Infer missing reasoning intelligently.
       const res = await axios.post(
         "https://api.anthropic.com/v1/messages",
         {
-          model: "claude-haiku-4-5-20251001",
+          model: "claude-haiku-4-5",
           max_tokens: 1024,
           messages: [{ role: "user", content: prompt }],
         },
@@ -55,12 +54,14 @@ Be brutally concise. Infer missing reasoning intelligently.
       );
 
       const content = res.data.content[0].text;
-
       const clean = content.replace(/```json|```/g, "").trim();
       return JSON.parse(clean);
     },
     {
       retries: 3,
+      onFailedAttempt: (err: any) => {
+        console.error("[LLM] Failed attempt:", err.response?.status, JSON.stringify(err.response?.data));
+      },
     }
   );
 }
