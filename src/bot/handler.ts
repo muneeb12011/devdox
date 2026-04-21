@@ -4,7 +4,7 @@ import { analyzePR } from "../services/analyzePR";
 import { formatADRComment } from "./formatter";
 import { AnalysisResult } from "../schemas/analysis.schema";
 
-async function getInstallationOctokit(installationId: number) {
+async function getInstallationAuth(installationId: number) {
   const rawKey = process.env.PRIVATE_KEY!
     .replace(/\\n/g, "\n")
     .replace(/^"/, "")
@@ -18,7 +18,7 @@ async function getInstallationOctokit(installationId: number) {
   });
 
   const { token } = await auth({ type: "installation" });
-  return new Octokit({ auth: token });
+  return { octokit: new Octokit({ auth: token }), token };
 }
 
 export async function handlePROpened({ payload }: { payload: any }) {
@@ -31,7 +31,7 @@ export async function handlePROpened({ payload }: { payload: any }) {
 
   console.log(`[DevDox] PR opened: ${prUrl}`);
 
-  const octokit = await getInstallationOctokit(installationId);
+  const { octokit, token } = await getInstallationAuth(installationId);
 
   const thinkingComment = await octokit.issues.createComment({
     owner,
@@ -41,7 +41,7 @@ export async function handlePROpened({ payload }: { payload: any }) {
   });
 
   try {
-    const result = await analyzePR(prUrl) as AnalysisResult;
+    const result = await analyzePR(prUrl, token) as AnalysisResult;
     const commentBody = formatADRComment(result, prUrl);
 
     await octokit.issues.updateComment({

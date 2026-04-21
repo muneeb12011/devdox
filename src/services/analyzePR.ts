@@ -1,17 +1,16 @@
-// src/services/analyzePR.ts
 import { fetchPRData } from "../lib/github";
 import { extractTicketIds, getSlackContext } from "../lib/parser";
 import { analyzeWithLLM } from "../lib/llm";
 import { AnalysisSchema } from "../schemas/analysis.schema";
 import { getCache, setCache } from "../lib/cache";
 
-export async function analyzePR(prUrl: string) {
+export async function analyzePR(prUrl: string, token?: string) {
   const cacheKey = `pr:${prUrl}`;
 
   const cached = await getCache(cacheKey);
   if (cached) return cached;
 
-  const { pr, commits } = await fetchPRData(prUrl);
+  const { pr, commits } = await fetchPRData(prUrl, token);
 
   const ticketIds = extractTicketIds(
     pr.title + " " + (pr.body || "")
