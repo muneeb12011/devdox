@@ -1,5 +1,4 @@
 import axios from "axios";
-import pRetry from "p-retry";
 
 export async function analyzeWithLLM(input: {
   prTitle: string;
@@ -35,33 +34,17 @@ OUTPUT JSON ONLY — no markdown, no backticks, just raw JSON:
 Be brutally concise. Infer missing reasoning intelligently.
 `;
 
-  return pRetry(
-    async () => {
-      const res = await axios.post(
-        "https://api.anthropic.com/v1/messages",
-        {
-          model: "claude-haiku-4-5",
-          max_tokens: 1024,
-          messages: [{ role: "user", content: prompt }],
-        },
-        {
-          headers: {
-            "x-api-key": process.env.ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-          },
-        }
-      );
-
-      const content = res.data.content[0].text;
-      const clean = content.replace(/```json|```/g, "").trim();
-      return JSON.parse(clean);
+  const res = await axios.post(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    {
+      contents: [{ parts: [{ text: prompt }] }],
     },
     {
-      retries: 3,
-      onFailedAttempt: (err: any) => {
-        console.error("[LLM] Failed attempt:", err.response?.status, JSON.stringify(err.response?.data));
-      },
+      headers: { "content-type": "application/json" },
     }
   );
+
+  const content = res.data.candidates[0].content.parts[0].text;
+  const clean = content.replace(/```json|```/g, "").trim();
+  return JSON.parse(clean);
 }
