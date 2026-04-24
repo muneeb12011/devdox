@@ -1,30 +1,24 @@
 import { Octokit } from "@octokit/rest";
+
 export async function fetchPRData(prUrl: string, token?: string) {
-  console.log("[GitHub] Using token first 20:", (token || process.env.GITHUB_TOKEN)?.substring(0, 20));
   const octokit = new Octokit({
     auth: token || process.env.GITHUB_TOKEN,
   });
-  const match = prUrl.match(/github.com\/(.+?)\/(.+?)\/pull\/(\d+)/);
-  if (!match) throw new Error("Invalid PR URL");
+
+  const match = prUrl.match(/github\.com\/(.+?)\/(.+?)\/pull\/(\d+)/);
+  if (!match) throw new Error(`Invalid PR URL: ${prUrl}`);
   const [, owner, repo, pull_number] = match;
-  const pr = await octokit.pulls.get({
-    owner,
-    repo,
-    pull_number: Number(pull_number),
-  });
-  const commits = await octokit.pulls.listCommits({
-    owner,
-    repo,
-    pull_number: Number(pull_number),
-  });
-  const files = await octokit.pulls.listFiles({
-    owner,
-    repo,
-    pull_number: Number(pull_number),
-  });
+
+  const [pr, commits, files] = await Promise.all([
+    octokit.pulls.get({ owner, repo, pull_number: Number(pull_number) }),
+    octokit.pulls.listCommits({ owner, repo, pull_number: Number(pull_number) }),
+    octokit.pulls.listFiles({ owner, repo, pull_number: Number(pull_number) }),
+  ]);
+
   return {
     owner,
     repo,
+    pull_number: Number(pull_number),
     pr: pr.data,
     commits: commits.data,
     files: files.data,

@@ -21,25 +21,66 @@ async function getInstallationAuth(installationId: number) {
   return { octokit: new Octokit({ auth: token }), token };
 }
 
+async function saveADRToRepo(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  pull_number: number,
+  prTitle: string,
+  adrContent: string
+) {
+  const date = new Date().toISOString().split("T")[0];
+  const slug = prTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 50);
+  const path = `docs/decisions/${date}-${slug}-pr${pull_number}.md`;
+
+  try {
+    // Check if file exists
+    let sha: string | undefined;
+    try {
+      const existing = await octokit.repos.getContent({ owner, repo, path });
+      sha = (existing.data as any).sha;
+    } catch {
+      // File doesn't exist yet — that's fine
+    }
+
+    await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path,
+      message: `docs: add ADR for PR #${pull_number} [skip ci]`,
+      content: Buffer.from(adrContent).toString("base64"),
+      ...(sha ? { sha } : {}),
+    });
+
+    console.log(`[DevDox] ADR saved to ${path}`);
+  } catch (err: any) {
+    console.warn(`[DevDox] Could not save ADR to repo: ${err.message}`);
+  }
+}
+
 export async function handlePROpened({ payload }: { payload: any }) {
   const pr = payload.pull_request;
   const owner = payload.repository.owner.login;
   const repo = payload.repository.name;
   const pull_number = pr.number;
   const prUrl = pr.html_url;
-  const installationId = payload.installation.id;
+  const installationId = payload.installation?.id;
 
-  console.log(`[DevDox] PR opened: ${prUrl}`);
+  console.log(`[DevDox] PR #${pull_number} opened in ${owner}/${repo}`);
+
+  if (!installationId) {
+    console.error("[DevDox] No installation ID in payload");
+    return;
+  }
 
   let octokit: Octokit, token: string;
   try {
     const auth = await getInstallationAuth(installationId);
     octokit = auth.octokit;
     token = auth.token;
-    console.log('[DevDox] Installation token first 20:', token.substring(0, 20));
   } catch (err: any) {
-    console.error('[DevDox] getInstallationAuth FAILED:', err.message);
-    throw err;
+    console.error("[DevDox] Auth failed:", err.message);
+    return;
   }
 
   const thinkingComment = await octokit.issues.createComment({
@@ -53,16 +94,19 @@ export async function handlePROpened({ payload }: { payload: any }) {
     const result = await analyzePR(prUrl, token) as AnalysisResult;
     const commentBody = formatADRComment(result, prUrl);
 
-    await octokit.issues.updateComment({
-      owner,
-      repo,
-      comment_id: thinkingComment.data.id,
-      body: commentBody,
-    });
+    await Promise.all([
+      octokit.issues.updateComment({
+        owner,
+        repo,
+        comment_id: thinkingComment.data.id,
+        body: commentBody,
+      }),
+      saveADRToRepo(octokit, owner, repo, pull_number, pr.title, result.suggestedADR),
+    ]);
 
-    console.log(`[DevDox] ADR posted for PR #${pull_number}`);
+    console.log(`[DevDox] ADR posted and saved for PR #${pull_number}`);
   } catch (err: any) {
-    console.error(`[DevDox] Analysis failed: ${err.message}`);
+    console.error(`[DevDox] Analysis failed for PR #${pull_number}:`, err.message);
 
     await octokit.issues.updateComment({
       owner,

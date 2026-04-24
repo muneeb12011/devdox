@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config({ override: true });
-console.log("ENV CHECK - REDIS_TOKEN first 20:", process.env.REDIS_TOKEN?.substring(0, 20));
+
 import express from "express";
 import { Webhooks, createNodeMiddleware } from "@octokit/webhooks";
 import { handlePROpened } from "./handler";
@@ -10,12 +10,11 @@ const webhooks = new Webhooks({
 });
 
 webhooks.on("pull_request.opened", async ({ payload }) => {
-  console.log("PR opened:", payload.pull_request.title);
   await handlePROpened({ payload } as any);
 });
 
 webhooks.onError((error) => {
-  console.error("Webhook error:", error);
+  console.error("[DevDox] Webhook error:", error.message);
 });
 
 const app = express();
@@ -23,5 +22,5 @@ app.use(createNodeMiddleware(webhooks, { path: "/api/github/webhooks" }));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`DevDox listening on port ${PORT}`);
+  console.log(`[DevDox] Listening on port ${PORT}`);
 });

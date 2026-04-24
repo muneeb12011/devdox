@@ -1,4 +1,3 @@
-// src/bot/formatter.ts
 import { AnalysisResult } from "../schemas/analysis.schema";
 
 export function formatADRComment(result: AnalysisResult, prUrl: string): string {
@@ -46,6 +45,6 @@ It reads your commits, PR description, and linked tickets to explain the *why* b
 
 </details>
 
-> 📎 [View PR](${prUrl}) · Powered by DevDox
+> 🔎 [View PR](${prUrl}) · Powered by DevDox
 `.trim();
 }
