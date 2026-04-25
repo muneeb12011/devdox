@@ -51,3 +51,31 @@ MIT
 
 **Built from Pakistan 🇵🇰**
 
+
+## What changed
+Added a full README.md to the DevDox repository covering installation, 
+architecture, tech stack, and roadmap.
+
+## Why
+The repo had no documentation making it hard for new contributors or 
+potential users to understand what DevDox does, how to install it, 
+or how to run it locally.
+
+## Decisions made
+- Chose to document the Probot + Groq + Upstash stack explicitly so 
+  contributors understand the architecture before diving into code
+- Added install badge linking directly to GitHub App installation flow
+  to reduce friction for new users
+- Included project structure tree so contributors know where to find 
+  each layer (bot, services, lib, schemas)
+- Documented environment variables with examples to prevent the 
+  dotenv/setup confusion we experienced during development
+
+## Risks
+- README links to devdox-nu.vercel.app which needs to stay live
+- Groq API key instructions assume free tier — may need updating 
+  when Pro plan launches with model selection
+
+## Related
+- Closes #1 (no documentation issue)
+- Part of v1.0 launch preparation
