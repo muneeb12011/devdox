@@ -1,1430 +1,1236 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>DevDox — ADRs on Autopilot</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --ink: #0a0a0f;
-  --paper: #f5f0e8;
-  --cream: #ede8d8;
-  --rust: #c44b2b;
-  --rust-dim: #9a3820;
-  --gold: #c9973a;
-  --sage: #4a6741;
-  --slate: #2c3e50;
-  --mist: #8a9ba8;
-  --warm-white: #faf6ee;
-  --card-bg: rgba(245,240,232,0.6);
-  --border-warm: rgba(196,75,43,0.15);
-  --border-muted: rgba(10,10,15,0.1);
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Outfit', sans-serif;
-  --font-mono: 'DM Mono', 'Courier New', monospace;
-}
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        
+        
+            <title>Python Requests – How to Interact with Web Services using Python</title>
+        
+        <meta name="HandheldFriendly" content="True">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Roboto+Mono:wght@400;700&display=swap">
+        
 
-body {
-  font-family: var(--font-body);
-  background: var(--paper);
-  color: var(--ink);
-  overflow-x: hidden;
-  cursor: default;
-}
+        
+        
+    <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://cdn.freecodecamp.org/news-assets/prism/1.29.0/themes/prism.min.css">
+<noscript>
+  <link rel="stylesheet" href="https://cdn.freecodecamp.org/news-assets/prism/1.29.0/themes/prism.min.css">
+</noscript>
+<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://cdn.freecodecamp.org/news-assets/prism/1.29.0/plugins/unescaped-markup/prism-unescaped-markup.min.css">
+<noscript>
+  <link rel="stylesheet" href="https://cdn.freecodecamp.org/news-assets/prism/1.29.0/plugins/unescaped-markup/prism-unescaped-markup.min.css">
+</noscript>
 
-/* ===== NOISE TEXTURE OVERLAY ===== */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.4;
-}
+<script defer="" src="https://cdn.freecodecamp.org/news-assets/prism/1.29.0/components/prism-core.min.js"></script>
+<script defer="" src="https://cdn.freecodecamp.org/news-assets/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
-/* ===== ANIMATED BG BLOBS ===== */
-.bg-orbs {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.25;
-  animation: drift 20s ease-in-out infinite;
-}
-.orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #c44b2b, transparent); top: -10%; left: -10%; animation-duration: 25s; }
-.orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, #c9973a, transparent); bottom: 10%; right: -5%; animation-duration: 30s; animation-delay: -10s; }
-.orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, #4a6741, transparent); top: 40%; left: 40%; animation-duration: 35s; animation-delay: -5s; }
 
-@keyframes drift {
-  0%,100% { transform: translate(0,0) scale(1); }
-  33% { transform: translate(40px,-30px) scale(1.1); }
-  66% { transform: translate(-20px,40px) scale(0.95); }
-}
 
-/* ===== NAV ===== */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  padding: 0 60px;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(245,240,232,0.85);
-  backdrop-filter: blur(24px) saturate(1.4);
-  border-bottom: 1px solid var(--border-muted);
-  animation: slideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
-}
+        
+        <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/news/assets/css/global-a1e6959968.css">
+        <link rel="stylesheet" type="text/css" href="/news/assets/css/variables-b2e544cd65.css">
+        <link rel="stylesheet" type="text/css" href="/news/assets/css/screen-054e43b9be.css">
+        <link rel="stylesheet" type="text/css" href="/news/assets/css/search-bar-ae40a2a552.css">
 
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+        
+        <script defer="" src="https://cdn.freecodecamp.org/news-assets/algolia/algoliasearch-3-33-0/algoliasearch.min.js"></script>
+        <script defer="" src="https://cdn.freecodecamp.org/news-assets/algolia/autocomplete-0-36-0/autocomplete.min.js"></script>
 
-.logo {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-}
-.logo span { color: var(--rust); }
+        
+        <script defer="" src="https://cdn.freecodecamp.org/news-assets/dayjs/1.10.4/dayjs.min.js"></script>
+        <script defer="" src="https://cdn.freecodecamp.org/news-assets/dayjs/1.10.4/localizedFormat.min.js"></script>
+        <script defer="" src="https://cdn.freecodecamp.org/news-assets/dayjs/1.10.4/relativeTime.min.js"></script>
 
-.nav-links {
-  display: flex;
-  gap: 40px;
-  list-style: none;
-}
-.nav-links a {
-  color: var(--mist);
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  transition: color 0.2s;
-  position: relative;
-}
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -2px; left: 0;
-  width: 0; height: 1px;
-  background: var(--rust);
-  transition: width 0.3s;
-}
-.nav-links a:hover { color: var(--ink); }
-.nav-links a:hover::after { width: 100%; }
+        
+        
+            <script defer="" src="https://cdn.freecodecamp.org/news-assets/dayjs/1.10.4/locale/en.min.js"></script>
+        
 
-.nav-cta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--ink);
-  color: var(--paper);
-  padding: 10px 22px;
-  border-radius: 2px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.8rem;
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  transition: all 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-.nav-cta::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--rust);
-  transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-.nav-cta:hover::before { transform: translateX(0); }
-.nav-cta span { position: relative; z-index: 1; }
+        
+        <script>let client,index;document.addEventListener("DOMContentLoaded",()=>{client=algoliasearch("QMJYL5WYTI","89770b24481654192d7a5c402c6ad9a0"),index=client.initIndex("news")}),document.addEventListener("DOMContentLoaded",()=>{const e=window.screen.width,t=window.screen.height,n=e>=767&&t>=768?8:5,o=document.getElementById("search-form"),s=document.getElementById("search-input"),a=document.getElementById("dropdown-container");let d,i,c;s.addEventListener("input",e=>{d=e.target.value}),o.addEventListener("submit",e=>{e.preventDefault(),function(){if(i=document.getElementsByClassName("aa-cursor")[0],i&&d){const e=i.querySelector("a").href;window.location.assign(e)}else!i&&d&&c&&window.location.assign(`https://www.freecodecamp.org/news/search?query=${d}`)}()});const l=autocomplete("#search-input",{hint:!1,keyboardShortcuts:["s",191],openOnFocus:!0,appendTo:a,debug:!0},[{source:autocomplete.sources.hits(index,{hitsPerPage:n}),debounce:250,templates:{suggestion:e=>(c=!0,`\n            <a href="${e.url}">\n              <div class="algolia-result">\n                <span>${e._highlightResult.title.value}</span>\n              </div>\n            </a>\n          `),empty:()=>(c=!1,'\n            <div class="aa-suggestion footer-suggestion no-hits-footer">\n              <div class="algolia-result">\n                <span>\n                  No results found\n                </span>\n              </div>\n            </div>\n          '),footer:e=>{if(!e.isEmpty)return`\n              <div class="aa-suggestion footer-suggestion">\n                <a id="algolia-footer-selector" href="https://www.freecodecamp.org/news/search?query=${d}">\n                  <div class="algolia-result algolia-footer">\n                    See all results for ${d}\n                  </div>\n                </a>\n              </div>\n            `}}}]).on("autocomplete:selected",(e,t,n,o)=>{i=t?t.url:`https://www.freecodecamp.org/news/search?query=${d}`,"click"!==o.selectionMethod&&"tabKey"!==o.selectionMethod&&c&&window.location.assign(i)});document.addEventListener("click",e=>{e.target!==s&&l.autocomplete.close()})}),document.addEventListener("DOMContentLoaded",()=>{dayjs.extend(dayjs_plugin_localizedFormat),dayjs.extend(dayjs_plugin_relativeTime),dayjs.locale("en")});const isAuthenticated=document.cookie.split(";").some(e=>e.trim().startsWith("jwt_access_token=")),isDonor=document.cookie.split(";").some(e=>e.trim().startsWith("isDonor=true"));document.addEventListener("DOMContentLoaded",()=>{document.getElementById("toggle-button-nav").addEventListener("click",function(){const e=document.getElementById("menu-dropdown"),t=document.getElementById("toggle-button-nav");e.classList.toggle("display-menu"),t.ariaExpanded="true"==t.ariaExpanded?"false":"true"})});</script>
 
-/* ===== HERO ===== */
-.hero {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 80px;
-  padding: 120px 80px 80px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
+        
+            <script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous" async=""></script>
+        
 
-.hero-content { position: relative; }
+        
+        
+    
+        
+            <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.querySelector('.sidebar');
+    var isSideBarDisplayed = window.getComputedStyle(sidebar).display !== 'none';
+    function prepareAdSlot(elementId) {
+        // Get the element by ID
+        const targetElement = document.getElementById(elementId);
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 28px;
-  animation: fadeRight 0.8s 0.2s cubic-bezier(0.16,1,0.3,1) both;
-}
+        // Ensure the element exists before proceeding
+        if (!targetElement) {
+            console.error(`Element with ID ${elementId} not found`);
+            return;
+        }
 
-.pulse-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--sage);
-  position: relative;
-}
-.pulse-dot::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 1.5px solid var(--sage);
-  animation: sonar 2s ease-out infinite;
-}
-@keyframes sonar {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(2.5); opacity: 0; }
-}
+        const parentElement = targetElement.parentElement;
+        // Change the background color of the parent element
 
-h1 {
-  font-family: var(--font-display);
-  font-size: clamp(3.5rem, 6vw, 6.5rem);
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: var(--ink);
-  animation: fadeRight 0.8s 0.35s cubic-bezier(0.16,1,0.3,1) both;
-}
-h1 em {
-  font-style: italic;
-  color: var(--rust);
-}
-h1 .ghost {
-  -webkit-text-stroke: 1.5px var(--ink);
-  color: transparent;
-}
+        if (parentElement) {
+            console.log(elementId)
 
-.hero-sub {
-  margin-top: 24px;
-  color: #5a6572;
-  font-size: 1rem;
-  line-height: 1.75;
-  max-width: 440px;
-  font-weight: 300;
-  animation: fadeRight 0.8s 0.5s cubic-bezier(0.16,1,0.3,1) both;
-}
+            if (elementId === 'gam-ad-bottom' ) {
+                parentElement.style.backgroundColor = '#eeeef0';
+                if(getComputedStyle(parentElement).visibility === 'hidden') {
+                    parentElement.style.visibility = 'inherit'; 
+                }
+            }
 
-.hero-actions {
-  margin-top: 48px;
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  animation: fadeRight 0.8s 0.65s cubic-bezier(0.16,1,0.3,1) both;
-}
+            // Get the sibling elements
+            const siblingElements = parentElement.children;
 
-.btn-main {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--rust);
-  color: #fff;
-  padding: 15px 32px;
-  border-radius: 2px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  letter-spacing: 0.03em;
-  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-  position: relative;
-  overflow: hidden;
-}
-.btn-main::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.15);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s;
-}
-.btn-main:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(196,75,43,0.35); }
-.btn-main:hover::after { transform: scaleX(1); }
+            for (let i = 0; i < siblingElements.length; i++) {
+                const sibling = siblingElements[i];
 
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--ink);
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: 0.03em;
-  padding: 15px 20px;
-  border: 1.5px solid var(--border-muted);
-  border-radius: 2px;
-  transition: all 0.25s;
-}
-.btn-ghost:hover { border-color: var(--rust); color: var(--rust); }
+                // Skip the element itself
+                if (sibling === targetElement) continue;
 
-.hero-badge-row {
-  display: flex;
-  gap: 24px;
-  margin-top: 40px;
-  animation: fadeRight 0.8s 0.8s cubic-bezier(0.16,1,0.3,1) both;
-}
-.hero-badge {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.badge-num {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  color: var(--ink);
-  line-height: 1;
-}
-.badge-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--mist);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.badge-sep { width: 1px; background: var(--border-muted); align-self: stretch; margin: 4px 0; }
+                // Log the sibling or perform any other action
+                console.log('Found sibling:', sibling);
 
-/* ===== TERMINAL CARD ===== */
-.hero-visual {
-  position: relative;
-  animation: fadeLeft 0.9s 0.4s cubic-bezier(0.16,1,0.3,1) both;
-}
+                // Check visibility
+                if(getComputedStyle(sibling).visibility === 'hidden') {
+                    sibling.style.visibility = 'inherit'; 
+                }
 
-.floating-tag {
-  position: absolute;
-  background: var(--warm-white);
-  border: 1px solid var(--border-muted);
-  border-radius: 4px;
-  padding: 10px 16px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--sage);
-  white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  z-index: 2;
-}
-.ft-1 { top: -20px; right: -20px; animation: floatY 4s ease-in-out infinite; }
-.ft-2 { bottom: 60px; left: -30px; animation: floatY 5s ease-in-out infinite 1s; color: var(--rust); }
-@keyframes floatY {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
+                // Check if display is 'none', then change it to 'block'
+                if (getComputedStyle(sibling).display === 'none') {
+                    sibling.style.display = 'block'; 
+                }
+            }
+        } else {
+            console.warn('No parent element found');
+        }
+    }
 
-.terminal {
-  background: var(--ink);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 40px 100px rgba(10,10,15,0.25), 0 0 0 1px rgba(255,255,255,0.05);
-  position: relative;
-}
+    
+    window.googletag = window.googletag || {cmd: []};
+    googletag.cmd.push(function() {
 
-.term-bar {
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  background: rgba(255,255,255,0.03);
-}
-.tdot { width: 12px; height: 12px; border-radius: 50%; }
-.td-r { background: #ff5f57; }
-.td-y { background: #febc2e; }
-.td-g { background: #28c840; }
-.term-title { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 0.68rem; color: rgba(255,255,255,0.3); }
+        if(isSideBarDisplayed){
+            var sidebarHeight = sidebar.offsetHeight;
+            var adTextSideBarHeight = 0;
+            var sideBarAdContainert = 600 + 17;
+        
+            var styles = window.getComputedStyle(sidebar);
+            var avaiableSideAdSpace = sidebarHeight - adTextSideBarHeight - parseFloat(styles.paddingTop) - parseFloat(styles.paddingBottom);
+            var numSideElements = Math.floor(avaiableSideAdSpace / sideBarAdContainert);
+            for (var i = 0; i < numSideElements; i++) {
+                // container element
+                var containerElement = document.createElement('div');
+                containerElement.classList.add('ad-wrapper');
 
-.term-body {
-  padding: 24px;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 2;
-  color: rgba(255,255,255,0.6);
-}
+                //text element
+                var textElement = document.createElement('div');
+                textElement.classList.add('ad-text');
+                textElement.innerText = localizedAdText;
 
-.tg { color: #28c840; }
-.tr { color: #ff5f57; }
-.ty { color: #febc2e; }
-.tc { color: #5ac8fa; }
-.tw { color: rgba(255,255,255,0.9); }
-.tm { color: rgba(255,255,255,0.35); }
+                // ad element
+                var adElement = document.createElement('div');
+                var sideAdElementId = 'side-gam-ad-' + i;
+                adElement.id = sideAdElementId;
+                adElement.classList.add('side-bar-ad-slot');
 
-.adr-block {
-  margin-top: 16px;
-  padding: 16px;
-  background: rgba(196,75,43,0.12);
-  border-left: 2px solid #c44b2b;
-  border-radius: 0 6px 6px 0;
-}
-.adr-head {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.95);
-  margin-bottom: 10px;
-}
-.adr-row { margin: 3px 0; font-size: 0.75rem; }
+                // finalize setup
+                containerElement.appendChild(textElement);
+                containerElement.appendChild(adElement);
+                sidebar.appendChild(containerElement);
+                googletag.defineSlot('/23075930536/post-side', [[292, 30], [240, 400], [300, 75], [216, 54], [250, 360], [300, 50], 'fluid', [300, 31], [120, 20], [300, 250], [120, 30], [180, 150], [200, 446], [168, 42], [200, 200], [160, 600], [120, 90], [125, 125], [240, 133], [120, 60], [1, 1], [120, 240], [220, 90], [216, 36], [250, 250], [168, 28], [234, 60], [120, 600], [300, 600], [88, 31], [300, 100]], sideAdElementId).addService(googletag.pubads());
+            }
+        }
 
-.cursor {
-  display: inline-block;
-  width: 8px; height: 14px;
-  background: #c44b2b;
-  animation: blink 1s step-end infinite;
-  vertical-align: middle;
-  margin-left: 2px;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        // Define bottom ad
+        googletag.defineSlot('/23075930536/post-bottom', ['fluid'], 'gam-ad-bottom').addService(googletag.pubads());
 
-/* ===== MARQUEE ===== */
-.marquee-wrap {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  border-top: 1px solid var(--border-muted);
-  border-bottom: 1px solid var(--border-muted);
-  background: var(--cream);
-  padding: 16px 0;
-}
-.marquee-track {
-  display: flex;
-  gap: 60px;
-  width: max-content;
-  animation: marquee 25s linear infinite;
-}
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.marquee-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--mist);
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-}
-.marquee-item span { color: var(--rust); }
+        // Enable lazy loading with default settings.
+        googletag.pubads().enableLazyLoad();
 
-/* ===== SECTIONS ===== */
-.section {
-  position: relative;
-  z-index: 1;
-  padding: 120px 80px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
+        googletag.pubads().addEventListener("slotRequested", (event) => {
+            console.log(`Slot ${event.slot.getSlotElementId()} fetched`);
+        });
 
-.section-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--rust);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
-.section-eyebrow::before { content: '//'; opacity: 0.5; }
+        googletag.pubads().addEventListener("slotOnload", (event) => {
+            const elementId = event.slot.getSlotElementId();
+            prepareAdSlot(elementId);
+            console.log(`Slot ${event.slot.getSlotElementId()} rendered`);
+        });
 
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4vw, 4.5rem);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
-  color: var(--ink);
-  margin-bottom: 70px;
-}
-.section-title em { font-style: italic; color: var(--rust); }
-.section-title .ghost { -webkit-text-stroke: 1.5px var(--ink); color: transparent; }
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
 
-/* ===== HOW IT WORKS ===== */
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  background: var(--border-muted);
-  border: 1px solid var(--border-muted);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.step {
-  background: var(--warm-white);
-  padding: 48px 40px;
-  transition: background 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-.step::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--rust);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-}
-.step:hover { background: var(--cream); }
-.step:hover::before { transform: scaleX(1); }
 
-.step-num {
-  font-family: var(--font-display);
-  font-size: 4rem;
-  font-weight: 900;
-  line-height: 1;
-  -webkit-text-stroke: 1px rgba(10,10,15,0.15);
-  color: transparent;
-  margin-bottom: 20px;
-}
-.step-icon {
-  font-size: 2rem;
-  margin-bottom: 16px;
-  display: block;
-}
-.step h3 {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 12px;
-}
-.step p {
-  color: #6a7580;
-  font-size: 0.88rem;
-  line-height: 1.7;
-  font-weight: 300;
-}
+        // Trigger lazy loading
+        googletag.display('gam-ad-bottom');
 
-/* ===== FEATURES ===== */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: auto auto;
-  gap: 16px;
-}
-.feature {
-  background: var(--warm-white);
-  border: 1px solid var(--border-muted);
-  border-radius: 4px;
-  padding: 36px;
-  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-  position: relative;
-  overflow: hidden;
-}
-.feature::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--rust), var(--gold));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-}
-.feature:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(10,10,15,0.1); }
-.feature:hover::after { transform: scaleX(1); }
+    });
+});
+</script>
 
-.f1 { grid-column: span 7; background: var(--cream); }
-.f2 { grid-column: span 5; }
-.f3 { grid-column: span 4; }
-.f4 { grid-column: span 4; }
-.f5 { grid-column: span 4; }
+        
+    
 
-.feat-tag {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--rust);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  display: block;
-}
-.feature h3 {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  margin-bottom: 12px;
-}
-.f1 h3 { font-size: 1.7rem; }
-.feature p {
-  color: #6a7580;
-  font-size: 0.85rem;
-  line-height: 1.7;
-  font-weight: 300;
-}
-.feat-list {
-  list-style: none;
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.feat-list li {
-  font-size: 0.82rem;
-  color: #5a6572;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding-left: 0;
-}
-.feat-list li::before {
-  content: '→';
-  color: var(--rust);
-  font-size: 0.75rem;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
 
-/* Comment mock */
-.comment-mock {
-  margin-top: 20px;
-  background: #fff;
-  border: 1px solid var(--border-muted);
-  border-radius: 6px;
-  overflow: hidden;
-  font-size: 0.78rem;
-}
-.cm-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-muted);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #6a7580;
-}
-.cm-avatar {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--rust), var(--gold));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0;
-}
-.cm-body { padding: 14px 16px; line-height: 1.65; }
-.cm-section { margin: 8px 0; }
-.cm-section strong { color: var(--rust); font-weight: 600; }
-.cm-section ul { margin-left: 16px; color: #6a7580; margin-top: 4px; }
-.cm-footer { font-size: 0.7rem; color: var(--mist); margin-top: 8px; font-style: italic; }
+        
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5D6RKKP');</script>
 
-/* ===== STATS ===== */
-.stats-band {
-  position: relative;
-  z-index: 1;
-  background: var(--ink);
-  padding: 80px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
-  overflow: hidden;
-}
-.stats-band::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-.stat {
-  padding: 40px 60px;
-  border-right: 1px solid rgba(255,255,255,0.06);
-  position: relative;
-  z-index: 1;
-  text-align: center;
-}
-.stat:last-child { border-right: none; }
-.stat-num {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 4.5rem;
-  font-weight: 900;
-  letter-spacing: -0.05em;
-  color: var(--rust);
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.stat-label {
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.4);
-  letter-spacing: 0.06em;
-  font-weight: 300;
-}
+        
 
-/* ===== PRICING ===== */
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.plan {
-  background: var(--warm-white);
-  border: 1px solid var(--border-muted);
-  border-radius: 4px;
-  padding: 44px 36px;
-  position: relative;
-  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-  overflow: hidden;
-}
-.plan:hover { transform: translateY(-6px); box-shadow: 0 24px 70px rgba(10,10,15,0.1); }
-.plan.featured {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: transparent;
-}
-.plan.featured::before {
-  content: 'POPULAR';
-  position: absolute;
-  top: 0; right: 36px;
-  background: var(--rust);
-  color: #fff;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  padding: 6px 12px;
-  border-radius: 0 0 4px 4px;
-}
+        
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
 
-.plan-corner {
-  position: absolute;
-  top: 0; left: 0;
-  width: 60px; height: 60px;
-  border-top: 3px solid var(--rust);
-  border-left: 3px solid var(--rust);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.plan:hover .plan-corner, .plan.featured .plan-corner { opacity: 1; }
 
-.plan-name {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--rust);
-  margin-bottom: 20px;
-}
-.plan.featured .plan-name { color: rgba(196,75,43,0.8); }
+        
+        
+        
 
-.plan-price {
-  font-family: var(--font-display);
-  font-size: 4rem;
-  font-weight: 900;
-  letter-spacing: -0.05em;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.plan.featured .plan-price { color: var(--paper); }
-.plan-period {
-  font-size: 0.75rem;
-  color: var(--mist);
-  margin-bottom: 32px;
-  font-weight: 300;
-}
-.plan.featured .plan-period { color: rgba(255,255,255,0.35); }
+        
+        
 
-.plan-features {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-.plan-features li {
-  font-size: 0.82rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  color: #5a6572;
-}
-.plan.featured .plan-features li { color: rgba(255,255,255,0.55); }
-.plan-features li .ck { color: var(--sage); font-size: 0.9rem; flex-shrink: 0; }
-.plan-features li .cx { color: rgba(10,10,15,0.2); flex-shrink: 0; }
-.plan.featured .plan-features li .cx { color: rgba(255,255,255,0.15); }
+        <link rel="icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon.ico" type="image/png">
+        
+        
+            <link rel="canonical" href="https://www.freecodecamp.org/news/how-to-interact-with-web-services-using-python/">
+        
+        <meta name="referrer" content="no-referrer-when-downgrade">
 
-.plan-btn {
-  display: block;
-  text-align: center;
-  padding: 13px;
-  border-radius: 2px;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 0.84rem;
-  text-decoration: none;
-  letter-spacing: 0.03em;
-  transition: all 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-.pbo { border: 1.5px solid var(--border-muted); color: var(--ink); }
-.pbo:hover { border-color: var(--rust); color: var(--rust); }
-.pbf { background: var(--rust); color: #fff; }
-.pbf:hover { background: var(--rust-dim); box-shadow: 0 8px 30px rgba(196,75,43,0.4); }
+        
 
-/* ===== CTA ===== */
-.cta-section {
-  position: relative;
-  z-index: 1;
-  background: var(--cream);
-  padding: 140px 80px;
-  text-align: center;
-  overflow: hidden;
-  border-top: 1px solid var(--border-muted);
-}
-.cta-section::before {
-  content: 'DOCUMENT';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-display);
-  font-size: 25vw;
-  font-weight: 900;
-  font-style: italic;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(10,10,15,0.04);
-  white-space: nowrap;
-  pointer-events: none;
-  letter-spacing: -0.04em;
-  line-height: 1;
-}
-.cta-section h2 {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6vw, 7rem);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  margin-bottom: 20px;
-  position: relative;
-}
-.cta-section h2 em { font-style: italic; color: var(--rust); }
-.cta-section p {
-  color: #6a7580;
-  font-size: 1rem;
-  margin-bottom: 48px;
-  font-weight: 300;
-  position: relative;
-}
-.cta-section .btn-main { position: relative; display: inline-flex; }
+        
+    <meta name="description" content="An API, or Application Programming Interface, facilitates communication between two pieces of software. It lets you retrieve and send data using code. We mostly commonly use APIs to retrieve data, and that will be the focus of this beginner-friendly ...">
 
-/* ===== FOOTER ===== */
-footer {
-  position: relative;
-  z-index: 1;
-  border-top: 1px solid var(--border-muted);
-  padding: 40px 80px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--warm-white);
-}
-.footer-links { display: flex; gap: 28px; list-style: none; }
-.footer-links a { color: var(--mist); text-decoration: none; font-size: 0.78rem; font-weight: 400; transition: color 0.2s; }
-.footer-links a:hover { color: var(--rust); }
-.footer-copy { font-size: 0.72rem; color: var(--mist); font-family: var(--font-mono); }
+    
+    <meta property="og:site_name" content="freeCodeCamp.org">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Python Requests – How to Interact with Web Services using Python">
+    
+        <meta property="og:description" content="An API, or Application Programming Interface, facilitates communication between two pieces of software. It lets you retrieve and send data using code. We mostly commonly use APIs to retrieve data, and that will be the focus of this beginner-friendly ...">
+    
+    <meta property="og:url" content="https://www.freecodecamp.org/news/how-to-interact-with-web-services-using-python/">
+    <meta property="og:image" content="https://www.freecodecamp.org/news/content/images/2021/12/Black-Moon-Blog-Banner--2-.png">
+    <meta property="article:published_time" content="2021-12-13T23:03:42.000Z">
+    <meta property="article:modified_time" content="2021-12-13T23:03:42.000Z">
+    
+        <meta property="article:tag" content="api">
+    
+        <meta property="article:tag" content="http">
+    
+        <meta property="article:tag" content="Python">
+    
+        <meta property="article:tag" content="REST API">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/freecodecamp">
+    
+        <meta property="article:author" content="ashutoshkrris">
+    
 
-/* ===== DIVIDER ===== */
-.divider {
-  position: relative; z-index: 1;
-  border: none;
-  border-top: 1px solid var(--border-muted);
-}
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Python Requests – How to Interact with Web Services using Python">
+    
+        <meta name="twitter:description" content="An API, or Application Programming Interface, facilitates communication between two pieces of software. It lets you retrieve and send data using code. We mostly commonly use APIs to retrieve data, and that will be the focus of this beginner-friendly ...">
+    
+    <meta name="twitter:url" content="https://www.freecodecamp.org/news/how-to-interact-with-web-services-using-python/">
+    <meta name="twitter:image" content="https://www.freecodecamp.org/news/content/images/2021/12/Black-Moon-Blog-Banner--2-.png">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Ashutosh Krishna">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="api, http, Python, REST API">
+    <meta name="twitter:site" content="@freecodecamp">
+    
+        <meta name="twitter:creator" content="@ashutoshkrris">
+    
 
-/* ===== ANIMATIONS ===== */
-@keyframes fadeRight {
-  from { opacity: 0; transform: translateX(-30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@keyframes fadeLeft {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="400">
 
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
-}
-.reveal.vis {
-  opacity: 1;
-  transform: none;
-}
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
 
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--cream); }
-::-webkit-scrollbar-thumb { background: rgba(10,10,15,0.2); border-radius: 2px; }
+        
+    <script type="application/ld+json">{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"publisher": {
+		"@type": "Organization",
+		"name": "freeCodeCamp.org",
+		"url": "https://www.freecodecamp.org/news/",
+		"logo": {
+			"@type": "ImageObject",
+			"url": "https://cdn.freecodecamp.org/platform/universal/fcc_primary.svg",
+			"width": 2100,
+			"height": 240
+		}
+	},
+	"image": {
+		"@type": "ImageObject",
+		"url": "https://www.freecodecamp.org/news/content/images/2021/12/Black-Moon-Blog-Banner--2-.png",
+		"width": 600,
+		"height": 400
+	},
+	"url": "https://www.freecodecamp.org/news/how-to-interact-with-web-services-using-python/",
+	"mainEntityOfPage": {
+		"@type": "WebPage",
+		"@id": "https://www.freecodecamp.org/news/"
+	},
+	"datePublished": "2021-12-13T23:03:42.000Z",
+	"dateModified": "2021-12-13T23:03:42.000Z",
+	"keywords": "api, http, Python, REST API",
+	"description": "An API, or Application Programming Interface, facilitates communication between two pieces of software. It lets you retrieve and send data using code. We mostly commonly use APIs to retrieve data, and that will be the focus of this beginner-friendly ...",
+	"headline": "Python Requests – How to Interact with Web Services using Python",
+	"author": {
+		"@type": "Person",
+		"name": "Ashutosh Krishna",
+		"url": "https://www.freecodecamp.org/news/author/ashutoshkrris/",
+		"sameAs": [
+			"https://ashutoshkrris.in",
+			"https://www.facebook.com/ashutoshkrris",
+			"https://x.com/ashutoshkrris"
+		],
+		"image": {
+			"@type": "ImageObject",
+			"url": "https://cdn.hashnode.com/res/hashnode/image/upload/v1640083362830/sCAEs4Nsyv.png",
+			"width": 600,
+			"height": 400
+		}
+	}
+}</script>
 
-/* ===== SELECTION ===== */
-::selection { background: var(--rust); color: #fff; }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) {
-  .hero { grid-template-columns: 1fr; gap: 60px; padding: 120px 40px 60px; }
-  .hero-visual { max-width: 560px; }
-  .features-grid { grid-template-columns: repeat(6,1fr); }
-  .f1 { grid-column: span 6; }
-  .f2 { grid-column: span 6; }
-  .f3,.f4,.f5 { grid-column: span 6; }
-}
-@media (max-width: 768px) {
-  nav { padding: 0 24px; }
-  .nav-links { display: none; }
-  .section { padding: 80px 24px; }
-  .steps { grid-template-columns: 1fr; }
-  .features-grid { grid-template-columns: 1fr; }
-  .f1,.f2,.f3,.f4,.f5 { grid-column: span 1; }
-  .pricing-grid { grid-template-columns: 1fr; }
-  .stats-band { grid-template-columns: 1fr; padding: 60px 24px; }
-  .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 36px; }
-  .stat:last-child { border-bottom: none; }
-  footer { flex-direction: column; gap: 20px; text-align: center; padding: 32px 24px; }
-  .cta-section { padding: 100px 24px; }
-  .hero-badge-row { flex-wrap: wrap; gap: 20px; }
-}
+        <meta name="generator" content="Eleventy">
+        <link rel="alternate" type="application/rss+xml" title="freeCodeCamp.org" href="https://www.freecodecamp.org/news/rss/">
 
-/* ===== TYPED ANIMATION ===== */
-.type-text { border-right: 2px solid var(--rust); animation: blink-cursor 0.8s step-end infinite; }
-@keyframes blink-cursor { 0%,100%{border-color:var(--rust)} 50%{border-color:transparent} }
+        
+        
 
-/* ===== HOVER GLOW ===== */
-.glow-hover {
-  transition: box-shadow 0.3s;
-}
-.glow-hover:hover {
-  box-shadow: 0 0 40px rgba(196,75,43,0.2);
-}
+        
+  <meta name="x-fcc-source" data-test-label="x-fcc-source" content="Hashnode">
 
-/* ===== CODE HIGHLIGHT ANIMATION ===== */
-.code-line {
-  opacity: 0;
-  transform: translateX(-8px);
-  animation: codeFadeIn 0.5s forwards;
-}
-.code-line:nth-child(1) { animation-delay: 0.2s; }
-.code-line:nth-child(2) { animation-delay: 0.5s; }
-.code-line:nth-child(3) { animation-delay: 0.8s; }
-.code-line:nth-child(4) { animation-delay: 1.1s; }
-.code-line:nth-child(5) { animation-delay: 1.4s; }
-.code-line:nth-child(6) { animation-delay: 1.7s; }
-@keyframes codeFadeIn {
-  to { opacity: 1; transform: translateX(0); }
-}
+    </head>
 
-.adr-block {
-  opacity: 0;
-  animation: codeFadeIn 0.6s 2.1s forwards;
-}
+    
+        <body class="home-template">
+    
 
-/* ===== PROGRESS DOTS ===== */
-.progress-indicator {
-  display: flex;
-  gap: 6px;
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.pi-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-}
-.pi-dot.active { background: var(--rust); animation: pulseRed 1.5s ease-in-out infinite; }
-@keyframes pulseRed {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-</style>
-</head>
-<body>
+    
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5D6RKKP" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-<!-- BG ORBS -->
-<div class="bg-orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
+    
 
-<!-- NAV -->
-<nav>
-  <div class="logo">Dev<span>Dox</span></div>
-  <ul class="nav-links">
-    <li><a href="#how">How it works</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-    <li><a href="https://github.com/muneeb12011/devdox">GitHub</a></li>
-  </ul>
-  <a href="https://github.com/apps/devdox-ai" class="nav-cta">
-    <span>Install Free</span>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18A4.65 4.65 0 0 1 20 14c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .31.22.69.83.57A12 12 0 0 0 12 .3"/></svg>
-  </a>
+        <div class="site-wrapper">
+            <nav class="site-nav nav-padding universal-nav">
+    <div class="site-nav-left">
+        
+<form id="search-form" data-test-label="search-bar">
+    <div role="search" class="searchbox__wrapper">
+        <label class="fcc_sr_only" for="search-input">
+            Search
+        </label>
+        <input type="search" placeholder="
+    Search our news articles, tutorials, and books
+" id="search-input">
+        <button type="submit" class="ais-SearchBox-submit">
+            <svg class="ais-SearchBox-submitIcon" xmlns="https://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 40 40">
+    <path d="M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z"></path>
+</svg>
+
+            <span class="fcc_sr_only">Submit your search query</span>
+        </button>
+        <div id="dropdown-container"></div>
+    </div>
+</form>
+
+    </div>
+    <div class="site-nav-middle">
+        <a class="site-nav-logo" href="https://www.freecodecamp.org/news/" data-test-label="site-nav-logo"><img src="https://cdn.freecodecamp.org/platform/universal/fcc_primary.svg" alt="freeCodeCamp.org"></a>
+    </div>
+    <div class="site-nav-right">
+        <div class="nav-group">
+            <button aria-expanded="false" class="exposed-button-nav" id="toggle-button-nav" data-test-label="header-menu-button">
+              <span class="sr-only">Menu</span>
+              <span class="menu-btn-text">Menu</span>
+            </button>
+            <ul id="menu-dropdown" class="nav-list" aria-labelledby="toggle-button-nav" data-test-label="header-menu">
+                <li><a class="nav-link nav-link-flex" id="nav-forum" rel="noopener noreferrer" href="https://forum.freecodecamp.org/" target="_blank" data-test-label="forum-button">Forum</a></li>
+              <li><a class="nav-link nav-link-flex" id="nav-learn" rel="noopener noreferrer" href="https://www.freecodecamp.org/learn" target="_blank" data-test-label="learn-button">Curriculum</a></li>
+            </ul>
+            <a class="toggle-button-nav" id="nav-donate" rel="noopener noreferrer" href="https://www.freecodecamp.org/donate/" target="_blank" data-test-label="donate-button">Donate</a>
+        </div>
+
+    </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="eyebrow">
-      <span class="pulse-dot"></span>
-      GitHub App · Now Live
-    </div>
 
-    <h1>
-      Your PRs<br>deserve<br>
-      <em>better</em> <span class="ghost">docs.</span>
-    </h1>
+            
+            <a class="banner" id="banner" data-test-label="banner" rel="noopener noreferrer" target="_blank">
+    <p id="banner-text"></p>
+</a>
 
-    <p class="hero-sub">
-      DevDox watches every pull request and automatically generates a full Architecture Decision Record — dropped right in the comment thread. No templates. No meetings. No excuses.
-    </p>
 
-    <div class="hero-actions">
-      <a href="https://github.com/apps/devdox-ai" class="btn-main">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18A4.65 4.65 0 0 1 20 14c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .31.22.69.83.57A12 12 0 0 0 12 .3"/></svg>
-        Install on GitHub
-      </a>
-      <a href="#how" class="btn-ghost">See how it works →</a>
-    </div>
+    
+    <script>document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("banner"),t=document.getElementById("banner-text");if(isAuthenticated){t.innerHTML=isDonor?"Thank you for supporting freeCodeCamp through <span>your donations</span>.":"Support our charity and our mission. <span>Donate to freeCodeCamp.org</span>.",e.href=isDonor?"https://www.freecodecamp.org/news/how-to-donate-to-free-code-camp/":"https://www.freecodecamp.org/donate";const o=isDonor?"donor":"authenticated";e.setAttribute("text-variation",o)}else t.innerHTML="Learn to code — <span>free 3,000-hour curriculum</span>",e.href="https://www.freecodecamp.org/",e.setAttribute("text-variation","default")});</script>
 
-    <div class="hero-badge-row">
-      <div class="hero-badge">
-        <span class="badge-num">~15s</span>
-        <span class="badge-label">ADR generation</span>
-      </div>
-      <div class="badge-sep"></div>
-      <div class="hero-badge">
-        <span class="badge-num">100%</span>
-        <span class="badge-label">PR coverage</span>
-      </div>
-      <div class="badge-sep"></div>
-      <div class="hero-badge">
-        <span class="badge-num">∞</span>
-        <span class="badge-label">Repos supported</span>
-      </div>
-    </div>
-  </div>
 
-  <div class="hero-visual">
-    <div class="floating-tag ft-1">✓ ADR saved to docs/decisions/</div>
-    <div class="floating-tag ft-2">⚡ Triggered on PR open</div>
+            <div id="error-message"></div>
 
-    <div class="terminal glow-hover">
-      <div class="term-bar">
-        <span class="tdot td-r"></span>
-        <span class="tdot td-y"></span>
-        <span class="tdot td-g"></span>
-        <span class="term-title">devdox · pr-analysis · live</span>
-        <div class="progress-indicator">
-          <div class="pi-dot active"></div>
-          <div class="pi-dot active" style="animation-delay:0.3s"></div>
-          <div class="pi-dot active" style="animation-delay:0.6s"></div>
-        </div>
-      </div>
-      <div class="term-body">
-        <div class="code-line"><span class="tm"># PR #42 opened in</span> <span class="tc">muneeb12011/devdox</span></div>
-        <div class="code-line"><span class="tg">✓</span> <span class="tm">Fetching commits + diffs</span></div>
-        <div class="code-line"><span class="tg">✓</span> <span class="tm">Extracting linked tickets</span></div>
-        <div class="code-line"><span class="tg">✓</span> <span class="tm">Running LLM analysis</span></div>
-        <div class="code-line"><span class="tg">✓</span> <span class="tm">Saving to</span> <span class="ty">docs/decisions/2026-04-24-auth-refactor-pr42.md</span></div>
-        <div class="code-line"><span style="color:#c44b2b">[DevDox]</span> <span class="tw">ADR posted for PR #42</span> <span class="cursor"></span></div>
+            
+    <main id="site-main" class="post-template site-main outer">
+        <div class="inner ad-layout">
+            <article class="post-full post">
+                <header class="post-full-header">
+                    <section class="post-full-meta">
+                        <time class="post-full-meta-date" data-test-label="post-full-meta-date" datetime="2021-12-13T23:03:42.000Z">
+                            December 13, 2021
+                        </time>
+                        
+                            <span class="date-divider">/</span>
+                            <a dir="ltr" href="/news/tag/api/">
+                                #api
+                            </a>
+                        
+                    </section>
+                    <h1 class="post-full-title" data-test-label="post-full-title">Python Requests – How to Interact with Web Services using Python</h1>
+                </header>
+                
+                    <div class="post-full-author-header" data-test-label="author-header-no-bio">
+                        
+                            
+    
+    
+    
 
-        <div class="adr-block">
-          <div class="adr-head">🧠 Architecture Decision Record — #42</div>
-          <div class="adr-row"><span class="tc">Summary:</span> <span class="tw">Migrated auth to installation tokens for private repo access</span></div>
-          <div class="adr-row"><span class="tc">Decision:</span> <span class="tw">Use createAppAuth over personal tokens</span></div>
-          <div class="adr-row"><span class="ty">Risk:</span> <span class="tw">Token expiry must be handled — 1hr TTL</span></div>
-          <div class="adr-row"><span class="tg">Status:</span> <span class="tw">✅ Accepted · Saved to /docs/decisions/</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <section class="author-card" data-test-label="author-card">
+        
+            
+    <img srcset="https://cdn.hashnode.com/res/hashnode/image/upload/v1640083362830/sCAEs4Nsyv.png 60w" sizes="60px" src="https://cdn.hashnode.com/res/hashnode/image/upload/v1640083362830/sCAEs4Nsyv.png" class="author-profile-image" alt="Ashutosh Krishna" width="600" height="400" onerror="this.style.display='none'" data-test-label="profile-image">
+  
+        
 
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee-track">
-    <div class="marquee-item"><span>✦</span> Zero setup required</div>
-    <div class="marquee-item"><span>✦</span> GitHub App integration</div>
-    <div class="marquee-item"><span>✦</span> Instant ADR generation</div>
-    <div class="marquee-item"><span>✦</span> Jira & Linear context</div>
-    <div class="marquee-item"><span>✦</span> Redis-cached results</div>
-    <div class="marquee-item"><span>✦</span> Auto-commit to repo</div>
-    <div class="marquee-item"><span>✦</span> 100% PR coverage</div>
-    <div class="marquee-item"><span>✦</span> Zero setup required</div>
-    <div class="marquee-item"><span>✦</span> GitHub App integration</div>
-    <div class="marquee-item"><span>✦</span> Instant ADR generation</div>
-    <div class="marquee-item"><span>✦</span> Jira & Linear context</div>
-    <div class="marquee-item"><span>✦</span> Redis-cached results</div>
-    <div class="marquee-item"><span>✦</span> Auto-commit to repo</div>
-    <div class="marquee-item"><span>✦</span> 100% PR coverage</div>
-  </div>
-</div>
+        <section class="author-card-content author-card-content-no-bio">
+            <span class="author-card-name">
+                <a href="/news/author/ashutoshkrris/" data-test-label="profile-link">
+                    
+                        Ashutosh Krishna
+                    
+                </a>
+            </span>
+            
+        </section>
+    </section>
 
-<!-- HOW IT WORKS -->
-<section class="section" id="how">
-  <div class="reveal">
-    <div class="section-eyebrow">how it works</div>
-    <h2 class="section-title">Zero friction.<br><span class="ghost">Full</span> <em>coverage.</em></h2>
-  </div>
+                        
+                    </div>
+                
+                <figure class="post-full-image">
+                    
+    <picture>
+      <source media="(max-width: 700px)" sizes="1px" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7 1w">
+      <source media="(min-width: 701px)" sizes="(max-width: 800px) 400px, (max-width: 1170px) 700px, 1400px" srcset="https://www.freecodecamp.org/news/content/images/size/w300/2021/12/Black-Moon-Blog-Banner--2-.png 300w, https://www.freecodecamp.org/news/content/images/size/w600/2021/12/Black-Moon-Blog-Banner--2-.png 600w, https://www.freecodecamp.org/news/content/images/size/w1000/2021/12/Black-Moon-Blog-Banner--2-.png 1000w, https://www.freecodecamp.org/news/content/images/size/w2000/2021/12/Black-Moon-Blog-Banner--2-.png 2000w">
+      <img onerror="this.style.display='none'" src="https://www.freecodecamp.org/news/content/images/size/w2000/2021/12/Black-Moon-Blog-Banner--2-.png" alt="Python Requests – How to Interact with Web Services using Python" ,="" width="600" height="400" data-test-label="feature-image">
+    </picture>
+  
+                </figure>
+                <section class="post-full-content">
+                    <div class="post-and-sidebar">
+                        <section class="post-content " data-test-label="post-content">
+                            
+<p>An API, or <strong>Application Programming Interface</strong>, facilitates communication between two pieces of software. It lets you retrieve and send data using code. We mostly commonly use APIs to retrieve data, and that will be the focus of this beginner-friendly tutorial.</p>
+<p>When we want to receive data from an API, we need to make a <strong>request</strong>. Requests are used all over the web. For instance, when you visited this blog post, your web browser made a request to the freeCodeCamp web server, which responded with the content of this web page.</p>
+<p><img src="https://res.cloudinary.com/dlomjljb6/image/upload/v1/media/blog/uploads/2021/06/04/api-request_rlwgao" alt="Image" width="600" height="400" loading="lazy"></p>
+<p>API requests work in exactly the same way – you make a request to an API server for data, and it responds to your request.</p>
+<h2 id="heading-different-http-methods-and-status-codes">Different HTTP Methods and Status Codes</h2>
+<p>There are various HTTP methods for <a target="_blank" href="https://www.ibm.com/cloud/learn/rest-apis">REST APIs</a>. These methods tell the API what operations need to be performed on the data. While there are many HTTP methods, the five methods listed below are the most commonly used with REST APIs:</p>
+<table><thead><tr><th>HTTP method</th><th>Description</th></tr></thead><tbody><tr><td><code>GET</code></td><td>Retrieve existing data</td></tr><tr><td><code>POST</code></td><td>Add new data</td></tr><tr><td><code>PUT</code></td><td>Update existing data</td></tr><tr><td><code>PATCH</code></td><td>Partially update existing data</td></tr><tr><td><code>DELETE</code></td><td>Delete data</td></tr></tbody></table>
 
-  <div class="steps reveal">
-    <div class="step">
-      <div class="step-num">01</div>
-      <span class="step-icon">⚡</span>
-      <h3>Install the GitHub App</h3>
-      <p>One click. Pick your repos. DevDox gets read access to PRs and write access to post comments. Works in under 60 seconds.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <span class="step-icon">🔍</span>
-      <h3>Open any PR</h3>
-      <p>DevDox wakes up the moment a PR is opened. It reads commits, diffs, linked tickets, and PR discussions for full context.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <span class="step-icon">📄</span>
-      <h3>Get your ADR instantly</h3>
-      <p>A structured Architecture Decision Record drops in the PR thread and saves to <code style="background:var(--cream);padding:2px 6px;border-radius:2px;font-size:0.8rem">docs/decisions/</code>. Done.</p>
-    </div>
-  </div>
-</section>
+<p>Once a REST API receives and processes an HTTP request, it returns a response with a HTTP status code. This status code provides information about the response and helps the client application know what kind of response it is.</p>
+<p>Status codes are numbered based on the category of the result:</p>
+<table><thead><tr><th>Code range</th><th>Category</th></tr></thead><tbody><tr><td><code>1xx</code></td><td>Informational response</td></tr><tr><td><code>2xx</code></td><td>Successful operation</td></tr><tr><td><code>3xx</code></td><td>Redirection</td></tr><tr><td><code>4xx</code></td><td>Client error</td></tr><tr><td><code>5xx</code></td><td>Server error</td></tr></tbody></table>
 
-<hr class="divider">
+<p>You can learn more about HTTP status codes from the <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN Web Docs</a>.</p>
+<h2 id="heading-api-endpoints">API Endpoints</h2>
+<p>API Endpoints are the public URLs exposed by the server that a client application uses to access resources and data. </p>
+<p>For the sake of this tutorial, we'll be using the <a target="_blank" href="https://fakestoreapi.com/">Fake Store REST API</a>. More specifically, we'll be using the below endpoints:</p>
+<table><thead><tr><th>HTTP method</th><th>API endpoint</th><th>Description</th></tr></thead><tbody><tr><td><code>GET</code></td><td><code>/products</code></td><td>Get a list of products.</td></tr><tr><td><code>GET</code></td><td><code>/products?limit=x</code></td><td>Get only 5 products.</td></tr><tr><td><code>GET</code></td><td><code>/products/&lt;product_id&gt;</code></td><td>Get a single product.</td></tr><tr><td><code>POST</code></td><td><code>/products</code></td><td>Create a new product.</td></tr><tr><td><code>PUT</code></td><td><code>/products/&lt;product_id&gt;</code></td><td>Update a product.</td></tr><tr><td><code>PATCH</code></td><td><code>/products/&lt;product_id&gt;</code></td><td>Partially update a product.</td></tr><tr><td><code>DELETE</code></td><td><code>/products/&lt;product_id&gt;</code></td><td>Delete a product.</td></tr></tbody></table>
 
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div class="reveal">
-    <div class="section-eyebrow">features</div>
-    <h2 class="section-title">Built for teams<br>who ship <em>fast.</em></h2>
-  </div>
+<p>Each of the endpoints above performs a different action based on the HTTP method. For each API URL, the base URL is: <code>https://fakestoreapi.com</code>. We'll explore them one after another. </p>
+<p>But first we need to install an external library to consume these APIs. Most Python developers use the <code>requests</code> library to interact with web services. You can install this library using the <code>pip</code> command like this:</p>
+<pre><code class="lang-bash">$ pip install requests
+</code></pre>
+<p>Once the library is installed, we're good to go!</p>
+<h2 id="heading-how-to-make-a-get-request">How to Make a GET Request</h2>
+<p>This is one of the most common HTTP request methods you'll come across. It is a <strong>read-only</strong> operation which allows you to retrieve data from the API. </p>
+<p>Let's try out the GET request on the first endpoint we mentioned above that responds with a list of products.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
 
-  <div class="features-grid reveal">
-    <div class="feature f1">
-      <span class="feat-tag">Core</span>
-      <h3>AI-powered ADR generation</h3>
-      <p>State-of-the-art LLMs synthesize your PR context into structured decision records — no prompting required. Just open a PR and merge.</p>
-      <div class="comment-mock">
-        <div class="cm-header">
-          <div class="cm-avatar">D</div>
-          <span><strong style="color:var(--ink)">devdox-ai</strong> &nbsp;·&nbsp; bot commented just now</span>
-        </div>
-        <div class="cm-body">
-          <div class="cm-section"><strong>🧠 Summary</strong><br>Replaced personal access token with GitHub App installation auth to support private repositories.</div>
-          <div class="cm-section"><strong>⚖️ Key Decisions</strong>
-            <ul><li>Use createAppAuth with installation tokens</li><li>Token passed through analyzePR service layer</li></ul>
-          </div>
-          <div class="cm-section"><strong>⚠️ Risks</strong>
-            <ul><li>Installation tokens expire after 1 hour — refresh logic required</li></ul>
-          </div>
-          <div class="cm-footer">Powered by DevDox · Saved to docs/decisions/2026-04-24-auth-refactor-pr42.md</div>
-        </div>
-      </div>
-    </div>
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
 
-    <div class="feature f2">
-      <span class="feat-tag">Storage</span>
-      <h3>Auto-saved to your repo</h3>
-      <p>Every ADR is committed directly to <code style="font-family:var(--font-mono);font-size:0.82em;background:var(--cream);padding:1px 5px;border-radius:2px">docs/decisions/</code> with a timestamped filename.</p>
-      <ul class="feat-list">
-        <li>Versioned alongside your code</li>
-        <li>Searchable by PR number or date</li>
-        <li>Markdown format, always readable</li>
-        <li>Never loses context</li>
-      </ul>
-    </div>
-
-    <div class="feature f3">
-      <span class="feat-tag">Performance</span>
-      <h3>Redis-cached results</h3>
-      <p>Re-open the same PR and DevDox responds instantly with zero extra API cost.</p>
-      <ul class="feat-list">
-        <li>Upstash Redis integration</li>
-        <li>Sub-100ms cache hits</li>
-        <li>Smart invalidation</li>
-      </ul>
-    </div>
-
-    <div class="feature f4">
-      <span class="feat-tag">Integrations</span>
-      <h3>Ticket context aware</h3>
-      <p>Parses Jira, Linear, and GitHub issue IDs from PR titles to pull in extra context automatically.</p>
-      <ul class="feat-list">
-        <li>JIRA-123 and LIN-456 extraction</li>
-        <li>Slack ingestion (coming soon)</li>
-        <li>Custom patterns via config</li>
-      </ul>
-    </div>
-
-    <div class="feature f5">
-      <span class="feat-tag">Coverage</span>
-      <h3>Every PR, no exceptions</h3>
-      <p>DevDox processes every PR automatically — no manual triggers, no forgotten docs, no gaps.</p>
-      <ul class="feat-list">
-        <li>Webhook-triggered, instant</li>
-        <li>All branches supported</li>
-        <li>Draft PR awareness</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- STATS BAND -->
-<div class="stats-band reveal">
-  <div class="stat">
-    <span class="stat-num">~15s</span>
-    <div class="stat-label">Average ADR generation time</div>
-  </div>
-  <div class="stat">
-    <span class="stat-num">100%</span>
-    <div class="stat-label">PR coverage, zero manual effort</div>
-  </div>
-  <div class="stat">
-    <span class="stat-num">∞</span>
-    <div class="stat-label">Repos supported per installation</div>
-  </div>
-</div>
-
-<!-- PRICING -->
-<section class="section" id="pricing">
-  <div class="reveal">
-    <div class="section-eyebrow">pricing</div>
-    <h2 class="section-title">Simple.<br><em>No surprises.</em></h2>
-  </div>
-
-  <div class="pricing-grid reveal">
-    <div class="plan">
-      <div class="plan-corner"></div>
-      <div class="plan-name">Starter</div>
-      <div class="plan-price">$0</div>
-      <div class="plan-period">forever free</div>
-      <ul class="plan-features">
-        <li><span class="ck">✓</span> 3 repos</li>
-        <li><span class="ck">✓</span> 50 ADRs / month</li>
-        <li><span class="ck">✓</span> GitHub comments</li>
-        <li><span class="ck">✓</span> docs/decisions/ saving</li>
-        <li><span class="cx">✗</span> Ticket context</li>
-        <li><span class="cx">✗</span> Priority support</li>
-      </ul>
-      <a href="https://github.com/apps/devdox-ai" class="plan-btn pbo">Get started free</a>
-    </div>
-
-    <div class="plan featured">
-      <div class="plan-corner"></div>
-      <div class="plan-name">Pro</div>
-      <div class="plan-price">$19</div>
-      <div class="plan-period">per month · billed monthly</div>
-      <ul class="plan-features">
-        <li><span class="ck">✓</span> Unlimited repos</li>
-        <li><span class="ck">✓</span> Unlimited ADRs</li>
-        <li><span class="ck">✓</span> GitHub comments</li>
-        <li><span class="ck">✓</span> docs/decisions/ saving</li>
-        <li><span class="ck">✓</span> Jira / Linear context</li>
-        <li><span class="ck">✓</span> Priority support</li>
-      </ul>
-      <a href="#" class="plan-btn pbf">Start free trial</a>
-    </div>
-
-    <div class="plan">
-      <div class="plan-corner"></div>
-      <div class="plan-name">Team</div>
-      <div class="plan-price">$49</div>
-      <div class="plan-period">per month · billed monthly</div>
-      <ul class="plan-features">
-        <li><span class="ck">✓</span> Everything in Pro</li>
-        <li><span class="ck">✓</span> Slack context ingestion</li>
-        <li><span class="ck">✓</span> Custom ADR templates</li>
-        <li><span class="ck">✓</span> Analytics dashboard</li>
-        <li><span class="ck">✓</span> SAML SSO</li>
-        <li><span class="ck">✓</span> Dedicated support</li>
-      </ul>
-      <a href="#" class="plan-btn pbo">Contact us</a>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="reveal">
-    <h2>Ship it.<br><em>Document it.</em></h2>
-    <p>One install. Every PR. Forever documented.</p>
-    <a href="https://github.com/apps/devdox-ai" class="btn-main" style="display:inline-flex">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18A4.65 4.65 0 0 1 20 14c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .31.22.69.83.57A12 12 0 0 0 12 .3"/></svg>
-      Install DevDox Free
-    </a>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="logo">Dev<span>Dox</span></div>
-  <ul class="footer-links">
-    <li><a href="https://github.com/muneeb12011/devdox">GitHub</a></li>
-    <li><a href="#">Docs</a></li>
-    <li><a href="#">Privacy</a></li>
-    <li><a href="#">Terms</a></li>
-  </ul>
-  <div class="footer-copy">© 2026 DevDox. Built with care.</div>
-</footer>
-
-<script>
-// Scroll reveal with stagger
-const revealEls = document.querySelectorAll('.reveal');
-const io = new IntersectionObserver((entries) => {
-  entries.forEach((e, idx) => {
-    if (e.isIntersecting) {
-      e.target.classList.add('vis');
-      io.unobserve(e.target);
+response = requests.get(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products"</span>)
+print(response.json())
+</code></pre>
+<p>The above script uses the <code>requests.get()</code> method to send a GET request on the API endpoint <code>/products</code>. It responds with a list of all the products. We then call <code>.json()</code> to view the JSON response, which looks like this:</p>
+<pre><code class="lang-json">[
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">109.95</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"men's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">3.9</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">120</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">2</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Mens Casual Premium Slim Fit T-Shirts "</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">22.3</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Slim-fitting style, contrast raglan long sleeve, three-button henley placket, light weight &amp; soft fabric for breathable and comfortable wearing. And Solid stitched shirts with round neck made for durability and a great fit for casual fashion wear and diehard baseball fans. The Henley style round neckline includes a three-button placket."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"men's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.1</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">259</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">3</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Mens Cotton Jacket"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">55.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"men's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.7</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">500</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">4</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Mens Casual Slim Fit"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">15.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"The color could be slightly different between on the screen and in practice. / Please note that body builds vary by person, therefore, detailed size information should be reviewed below on the product description."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"men's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">2.1</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">430</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">5</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"John Hardy Women's Legends Naga Gold &amp; Silver Dragon Station Chain Bracelet"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">695</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"From our Legends Collection, the Naga was inspired by the mythical water dragon that protects the ocean's pearl. Wear facing inward to be bestowed with love and abundance, or outward for protection."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"jewelery"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.6</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">400</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">6</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Solid Gold Petite Micropave "</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">168</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Satisfaction Guaranteed. Return or exchange any order within 30 days.Designed and sold by Hafeez Center in the United States. Satisfaction Guaranteed. Return or exchange any order within 30 days."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"jewelery"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">3.9</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">70</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">7</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"White Gold Plated Princess"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">9.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Classic Created Wedding Engagement Solitaire Diamond Promise Ring for Her. Gifts to spoil your love more for Engagement, Wedding, Anniversary, Valentine's Day..."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"jewelery"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71YAIFU48IL._AC_UL640_QL65_ML3_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">3</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">400</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">8</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Pierced Owl Rose Gold Plated Stainless Steel Double"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">10.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Rose Gold Plated Double Flared Tunnel Plug Earrings. Made of 316L Stainless Steel"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"jewelery"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">1.9</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">100</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">9</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"WD 2TB Elements Portable External Hard Drive - USB 3.0 "</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">64</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"USB 3.0 and USB 2.0 Compatibility Fast data transfers Improve PC Performance High Capacity; Compatibility Formatted NTFS for Windows 10, Windows 8.1, Windows 7; Reformatting may be required for other operating systems; Compatibility may vary depending on user’s hardware configuration and operating system"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronics"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY879_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">3.3</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">203</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">10</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"SanDisk SSD PLUS 1TB Internal SSD - SATA III 6 Gb/s"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">109</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Easy upgrade for faster boot up, shutdown, application load and response (As compared to 5400 RPM SATA 2.5” hard drive; Based on published specifications and internal benchmarking tests using PCMark vantage scores) Boosts burst write performance, making it ideal for typical PC workloads The perfect balance of performance and reliability Read/write speeds of up to 535MB/s/450MB/s (Based on internal testing; Performance may vary depending upon drive capacity, host device, OS and application.)"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronics"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/61U7T1koQqL._AC_SX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">2.9</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">470</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">11</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Silicon Power 256GB SSD 3D NAND A55 SLC Cache Performance Boost SATA III 2.5"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">109</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"3D NAND flash are applied to deliver high transfer speeds Remarkable transfer speeds that enable faster bootup and improved overall system performance. The advanced SLC Cache Technology allows performance boost and longer lifespan 7mm slim design suitable for Ultrabooks and Ultra-slim notebooks. Supports TRIM command, Garbage Collection technology, RAID, and ECC (Error Checking &amp; Correction) to provide the optimized performance and enhanced reliability."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronics"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71kWymZ+c+L._AC_SX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.8</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">319</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">12</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"WD 4TB Gaming Drive Works with Playstation 4 Portable External Hard Drive"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">114</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Expand your PS4 gaming experience, Play anywhere Fast and easy, setup Sleek design with high capacity, 3-year manufacturer's limited warranty"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronics"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/61mtL65D4cL._AC_SX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.8</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">400</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">13</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Acer SB220Q bi 21.5 inches Full HD (1920 x 1080) IPS Ultra-Thin"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">599</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"21. 5 inches Full HD (1920 x 1080) widescreen IPS display And Radeon free Sync technology. No compatibility for VESA Mount Refresh Rate: 75Hz - Using HDMI port Zero-frame design | ultra-thin | 4ms response time | IPS panel Aspect ratio - 16: 9. Color Supported - 16. 7 million colors. Brightness - 250 nit Tilt angle -5 degree to 15 degree. Horizontal viewing angle-178 degree. Vertical viewing angle-178 degree 75 hertz"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronics"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/81QpkIctqPL._AC_SX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">2.9</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">250</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">14</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Samsung 49-Inch CHG90 144Hz Curved Gaming Monitor (LC49HG90DMNXZA) – Super Ultrawide Screen QLED "</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">999.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"49 INCH SUPER ULTRAWIDE 32:9 CURVED GAMING MONITOR with dual 27 inch screen side by side QUANTUM DOT (QLED) TECHNOLOGY, HDR support and factory calibration provides stunningly realistic and accurate color and contrast 144HZ HIGH REFRESH RATE and 1ms ultra fast response time work to eliminate motion blur, ghosting, and reduce input lag"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronics"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/81Zt42ioCgL._AC_SX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">2.2</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">140</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">15</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"BIYLACLESEN Women's 3-in-1 Snowboard Jacket Winter Coats"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">56.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Note:The Jackets is US standard size, Please choose size as your usual wear Material: 100% Polyester; Detachable Liner Fabric: Warm Fleece. Detachable Functional Liner: Skin Friendly, Lightweigt and Warm.Stand Collar Liner jacket, keep you warm in cold weather. Zippered Pockets: 2 Zippered Hand Pockets, 2 Zippered Pockets on Chest (enough to keep cards or keys)and 1 Hidden Pocket Inside.Zippered Hand Pockets and Hidden Pocket keep your things secure. Humanized Design: Adjustable and Detachable Hood and Adjustable cuff to prevent the wind and water,for a comfortable fit. 3 in 1 Detachable Design provide more convenience, you can separate the coat and inner as needed, or wear it together. It is suitable for different season and help you adapt to different climates"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"women's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/51Y5NI-I5jL._AC_UX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">2.6</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">235</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">16</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Lock and Love Women's Removable Hooded Faux Leather Moto Biker Jacket"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">29.95</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"100% POLYURETHANE(shell) 100% POLYESTER(lining) 75% POLYESTER 25% COTTON (SWEATER), Faux leather material for style and comfort / 2 pockets of front, 2-For-One Hooded denim style faux leather jacket, Button detail on waist / Detail stitching at sides, HAND WASH ONLY / DO NOT BLEACH / LINE DRY / DO NOT IRON"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"women's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/81XH0e8fefL._AC_UY879_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">2.9</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">340</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">17</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Rain Jacket Women Windbreaker Striped Climbing Raincoats"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">39.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Lightweight perfet for trip or casual wear---Long sleeve with hooded, adjustable drawstring waist design. Button and zipper front closure raincoat, fully stripes Lined and The Raincoat has 2 side pockets are a good size to hold all kinds of things, it covers the hips, and the hood is generous but doesn't overdo it.Attached Cotton Lined Hood with Adjustable Drawstrings give it a real styled look."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"women's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71HblAHs5xL._AC_UY879_-2.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">3.8</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">679</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">18</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"MBJ Women's Solid Short Sleeve Boat Neck V "</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">9.85</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"95% RAYON 5% SPANDEX, Made in USA or Imported, Do Not Bleach, Lightweight fabric with great stretch for comfort, Ribbed on sleeves and neckline / Double stitching on bottom hem"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"women's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71z3kpMAYsL._AC_UY879_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.7</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">130</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">19</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Opna Women's Short Sleeve Moisture"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">7.95</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"100% Polyester, Machine wash, 100% cationic polyester interlock, Machine Wash &amp; Pre Shrunk for a Great Fit, Lightweight, roomy and highly breathable with moisture wicking fabric which helps to keep moisture away, Soft Lightweight Fabric with comfortable V-neck collar and a slimmer fit, delivers a sleek, more feminine silhouette and Added Comfort"</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"women's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/51eg55uWmdL._AC_UX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.5</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">146</span>
+        }
+    },
+    {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">20</span>,
+        <span class="hljs-attr">"title"</span>: <span class="hljs-string">"DANVOUY Womens T Shirt Casual Cotton Short"</span>,
+        <span class="hljs-attr">"price"</span>: <span class="hljs-number">12.99</span>,
+        <span class="hljs-attr">"description"</span>: <span class="hljs-string">"95%Cotton,5%Spandex, Features: Casual, Short Sleeve, Letter Print,V-Neck,Fashion Tees, The fabric is soft and has some stretch., Occasion: Casual/Office/Beach/School/Home/Street. Season: Spring,Summer,Autumn,Winter."</span>,
+        <span class="hljs-attr">"category"</span>: <span class="hljs-string">"women's clothing"</span>,
+        <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/61pHAEJ4NML._AC_UX679_.jpg"</span>,
+        <span class="hljs-attr">"rating"</span>: {
+            <span class="hljs-attr">"rate"</span>: <span class="hljs-number">3.6</span>,
+            <span class="hljs-attr">"count"</span>: <span class="hljs-number">145</span>
+        }
     }
-  });
-}, { threshold: 0.08 });
-revealEls.forEach(el => io.observe(el));
+]
+</code></pre>
+<p>If you look closely, the JSON response looks like list of Python dictionaries. JSON is a very popular data interchange format for REST APIs.</p>
+<p>You can also print other attributes related to the response such as the status code.</p>
+<pre><code class="lang-python">print(response.status_code)
 
-// Stagger children on reveal
-const staggerParents = document.querySelectorAll('.steps, .features-grid, .pricing-grid');
-const staggerIO = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const children = entry.target.children;
-      Array.from(children).forEach((child, i) => {
-        child.style.opacity = '0';
-        child.style.transform = 'translateY(30px)';
-        child.style.transition = `opacity 0.7s ${i * 0.1}s cubic-bezier(0.16,1,0.3,1), transform 0.7s ${i * 0.1}s cubic-bezier(0.16,1,0.3,1)`;
-        setTimeout(() => {
-          child.style.opacity = '1';
-          child.style.transform = 'none';
-        }, 100 + i * 80);
-      });
-      staggerIO.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1 });
-staggerParents.forEach(el => staggerIO.observe(el));
+<span class="hljs-comment"># OUTPUT</span>
+<span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-number">200</span>
+</code></pre>
+<p>As we know, status code 200 means a success response. </p>
+<p>Since the <code>/products</code> endpoint returns a lot of data, let's limit this data to just 3 products. </p>
+<p>To do this, we have an endpoint <code>/products?limit=x</code> where x is a positive integer. The <code>limit</code> is called query parameter. Let's see how we can add this query parameter in the request.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
 
-// Parallax orbs on mouse move
-document.addEventListener('mousemove', (e) => {
-  const mx = (e.clientX / window.innerWidth - 0.5);
-  const my = (e.clientY / window.innerHeight - 0.5);
-  document.querySelectorAll('.orb').forEach((orb, i) => {
-    const depth = (i + 1) * 12;
-    orb.style.transform = `translate(${mx * depth}px, ${my * depth}px) scale(1)`;
-  });
-});
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
 
-// Smooth number counter for stats
-function animateCounter(el, target, suffix = '') {
-  const start = 0;
-  const dur = 1800;
-  const startTime = performance.now();
-  const isSymbol = isNaN(parseFloat(target));
-  if (isSymbol) return;
-  const numTarget = parseFloat(target);
-  const isDecimal = target.includes('.');
-  const step = (now) => {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / dur, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const current = numTarget * eased;
-    el.textContent = (isDecimal ? current.toFixed(1) : Math.floor(current)) + suffix;
-    if (progress < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
+query_params = {
+    <span class="hljs-string">"limit"</span>: <span class="hljs-number">3</span>
 }
 
-const statNums = document.querySelectorAll('.stat-num');
-const statsIO = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const el = entry.target;
-      const text = el.textContent.trim();
-      const match = text.match(/^([~]?)([0-9.]+)(.*)$/);
-      if (match) {
-        const prefix = match[1];
-        const num = match[2];
-        const suffix = match[3];
-        el.textContent = prefix + '0' + suffix;
-        animateCounter({ set textContent(v) { el.textContent = prefix + v; } }, num, suffix);
-      }
-      statsIO.unobserve(el);
-    }
-  });
-}, { threshold: 0.5 });
-statNums.forEach(el => statsIO.observe(el));
-
-// Nav shrink on scroll
-const nav = document.querySelector('nav');
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 60) {
-    nav.style.height = '58px';
-    nav.style.borderBottomColor = 'rgba(10,10,15,0.12)';
-  } else {
-    nav.style.height = '70px';
-    nav.style.borderBottomColor = 'rgba(10,10,15,0.08)';
+response = requests.get(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products"</span>, params=query_params)
+print(response.json())
+</code></pre>
+<p>The <code>requests.get()</code> method takes a parameter called <code>params</code> where we can specify our query parameters in the form of a Python dictionary. Thus, we have created a dictionary called <code>query_params</code> and passed <code>limit</code> as the key and <code>3</code> as the value. We then passed this <code>query_params</code> in the <code>requests.get()</code>. The output now looks like this:</p>
+<pre><code class="lang-json">[
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops"</span>,
+    <span class="hljs-attr">"price"</span>: <span class="hljs-number">109.95</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday"</span>,
+    <span class="hljs-attr">"category"</span>: <span class="hljs-string">"men's clothing"</span>,
+    <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"</span>,
+    <span class="hljs-attr">"rating"</span>: { <span class="hljs-attr">"rate"</span>: <span class="hljs-number">3.9</span>, <span class="hljs-attr">"count"</span>: <span class="hljs-number">120</span> }
+  },
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Mens Casual Premium Slim Fit T-Shirts "</span>,
+    <span class="hljs-attr">"price"</span>: <span class="hljs-number">22.3</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Slim-fitting style, contrast raglan long sleeve, three-button henley placket, light weight &amp; soft fabric for breathable and comfortable wearing. And Solid stitched shirts with round neck made for durability and a great fit for casual fashion wear and diehard baseball fans. The Henley style round neckline includes a three-button placket."</span>,
+    <span class="hljs-attr">"category"</span>: <span class="hljs-string">"men's clothing"</span>,
+    <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg"</span>,
+    <span class="hljs-attr">"rating"</span>: { <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.1</span>, <span class="hljs-attr">"count"</span>: <span class="hljs-number">259</span> }
+  },
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">3</span>,
+    <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Mens Cotton Jacket"</span>,
+    <span class="hljs-attr">"price"</span>: <span class="hljs-number">55.99</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day."</span>,
+    <span class="hljs-attr">"category"</span>: <span class="hljs-string">"men's clothing"</span>,
+    <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"</span>,
+    <span class="hljs-attr">"rating"</span>: { <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.7</span>, <span class="hljs-attr">"count"</span>: <span class="hljs-number">500</span> }
   }
-});
+]
+</code></pre>
+<p>Now we have the response data limited to just 3 products. Let's try to get only one product with the <code>id</code> 18.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
 
-// Cursor ripple effect
-document.addEventListener('click', (e) => {
-  const ripple = document.createElement('div');
-  ripple.style.cssText = `
-    position: fixed;
-    left: ${e.clientX - 10}px;
-    top: ${e.clientY - 10}px;
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    border: 2px solid rgba(196,75,43,0.5);
-    pointer-events: none;
-    z-index: 9998;
-    animation: rippleOut 0.6s ease-out forwards;
-  `;
-  document.body.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 600);
-});
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
 
-const style = document.createElement('style');
-style.textContent = `
-@keyframes rippleOut {
-  to { transform: scale(4); opacity: 0; }
-}`;
-document.head.appendChild(style);
-</script>
+response = requests.get(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products/18"</span>)
+print(response)
+</code></pre>
+<p>Since we have an endpoint <code>/products/&lt;product_id&gt;</code>, we can pass the <code>id</code> 18 in the API URL and make a GET request on it. The response looks like this:</p>
+<pre><code class="lang-json">{
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">18</span>,
+    <span class="hljs-attr">"title"</span>: <span class="hljs-string">"MBJ Women's Solid Short Sleeve Boat Neck V "</span>,
+    <span class="hljs-attr">"price"</span>: <span class="hljs-number">9.85</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"95% RAYON 5% SPANDEX, Made in USA or Imported, Do Not Bleach, Lightweight fabric with great stretch for comfort, Ribbed on sleeves and neckline / Double stitching on bottom hem"</span>,
+    <span class="hljs-attr">"category"</span>: <span class="hljs-string">"women's clothing"</span>,
+    <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://fakestoreapi.com/img/71z3kpMAYsL._AC_UY879_.jpg"</span>,
+    <span class="hljs-attr">"rating"</span>: {
+        <span class="hljs-attr">"rate"</span>: <span class="hljs-number">4.7</span>,
+        <span class="hljs-attr">"count"</span>: <span class="hljs-number">130</span>
+    }
+}
+</code></pre>
+<h2 id="heading-how-to-make-a-post-request">How to Make a POST Request</h2>
+<p>We use the POST request to add new data to the REST API. The data is sent to the server in JSON format which looks like a Python dictionary. According to the Fake Store API documentation, a product has the following attributes: <code>title</code>, <code>price</code>, <code>description</code>, <code>image</code> and <code>category</code>. So, a new product looks like this:</p>
+<pre><code class="lang-python">new_product = {
+    <span class="hljs-string">"title"</span>: <span class="hljs-string">'test product'</span>,
+    <span class="hljs-string">"price"</span>: <span class="hljs-number">13.5</span>,
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">'lorem ipsum set'</span>,
+    <span class="hljs-string">"image"</span>: <span class="hljs-string">'https://i.pravatar.cc'</span>,
+    <span class="hljs-string">"category"</span>: <span class="hljs-string">'electronic'</span>
+}
+</code></pre>
+<p>We can send a POST request using the <code>requests.post()</code> method like this:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
+
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
+
+new_product = {
+    <span class="hljs-string">"title"</span>: <span class="hljs-string">'test product'</span>,
+    <span class="hljs-string">"price"</span>: <span class="hljs-number">13.5</span>,
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">'lorem ipsum set'</span>,
+    <span class="hljs-string">"image"</span>: <span class="hljs-string">'https://i.pravatar.cc'</span>,
+    <span class="hljs-string">"category"</span>: <span class="hljs-string">'electronic'</span>
+}
+
+response = requests.post(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products"</span>, json=new_product)
+print(response.json())
+</code></pre>
+<p>In the <code>requests.post()</code> method, we can pass JSON data using the <code>json</code> argument. Using the <code>json</code> argument automatically sets the <code>Content-Type</code> to <code>Application/JSON</code> in the request header. </p>
+<p>Once we make a POST request on the <code>/products</code> endpoint, we get a product object with the <code>id</code> in the response. The response looks like this:</p>
+<pre><code class="lang-json">{
+  <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"61b45067e087f30012c45a45"</span>,
+  <span class="hljs-attr">"id"</span>: <span class="hljs-number">21</span>,
+  <span class="hljs-attr">"title"</span>: <span class="hljs-string">"test product"</span>,
+  <span class="hljs-attr">"price"</span>: <span class="hljs-number">13.5</span>,
+  <span class="hljs-attr">"description"</span>: <span class="hljs-string">"lorem ipsum set"</span>,
+  <span class="hljs-attr">"image"</span>: <span class="hljs-string">"https://i.pravatar.cc"</span>,
+  <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronic"</span>
+}
+</code></pre>
+<p>If we don't use the <code>json</code> argument, we have to make the POST request like this:</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
+<span class="hljs-keyword">import</span> json
+
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
+
+new_product = {
+    <span class="hljs-string">"title"</span>: <span class="hljs-string">'test product'</span>,
+    <span class="hljs-string">"price"</span>: <span class="hljs-number">13.5</span>,
+    <span class="hljs-string">"description"</span>: <span class="hljs-string">'lorem ipsum set'</span>,
+    <span class="hljs-string">"image"</span>: <span class="hljs-string">'https://i.pravatar.cc'</span>,
+    <span class="hljs-string">"category"</span>: <span class="hljs-string">'electronic'</span>
+}
+
+headers = {
+    <span class="hljs-string">"Content-Type"</span>: <span class="hljs-string">"application/json"</span>
+}
+
+response = requests.post(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products"</span>, data=json.dumps(new_product), headers=headers)
+print(response.json())
+</code></pre>
+<p>In this case where we use the <code>data</code> argument instead of <code>json</code>, we need to set the <code>Content-Type</code> to <code>application/json</code> in the header explicitly. While in the case of the <code>json</code> argument, we don't need to serialize the data – but we need to serialize the data using <code>json.dumps()</code> in this case.</p>
+<h2 id="heading-how-to-make-a-put-request">How to Make a PUT Request</h2>
+<p>We often need to update existing data in the API. Using the PUT request, we can update the complete data. This means that when we make a PUT request, it replaces the old data with the new data.</p>
+<p>In the POST request, we had created a new product whose <code>id</code> was 21. Let's update the old product with a new product by making a PUT request on the <code>products/&lt;product_id&gt;</code> endpoint.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
+
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
+
+updated_product = {
+    <span class="hljs-string">"title"</span>: <span class="hljs-string">'updated_product'</span>,
+    <span class="hljs-string">"category"</span>: <span class="hljs-string">'clothing'</span>
+}
+
+response = requests.put(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products/21"</span>, json=updated_product)
+print(response.json())
+</code></pre>
+<p>When we make the PUT request with the <code>updated_product</code> using the <code>requests.put()</code> method, it responds with the following JSON data:</p>
+<pre><code class="lang-json">{
+  <span class="hljs-attr">"id"</span>: <span class="hljs-string">"21"</span>,
+  <span class="hljs-attr">"title"</span>: <span class="hljs-string">"updated_product"</span>,
+  <span class="hljs-attr">"category"</span>: <span class="hljs-string">"clothing"</span>
+}
+</code></pre>
+<p>Notice that the old product has been completely replaced with the updated product.</p>
+<h2 id="heading-how-to-make-a-patch-request">How to Make a PATCH Request</h2>
+<p>Sometime, we do not need to replace the old data completely. Rather we wish to modify only certain fields. In that case, we use the PATCH request. </p>
+<p>Let's update the category of the product back from <strong>clothing</strong> to <strong>electronic</strong> by making a PATCH request on the <code>products/&lt;product_id&gt;</code> endpoint.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
+
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
+
+updated_product = {
+    <span class="hljs-string">"category"</span>: <span class="hljs-string">'electronic'</span>
+}
+
+response = requests.patch(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products/21"</span>, json=updated_product)
+print(response.json())
+</code></pre>
+<p>In this case, we use the <code>requests.patch()</code> method which returns a response like this:</p>
+<pre><code class="lang-json">{
+  <span class="hljs-attr">"id"</span>: <span class="hljs-string">"21"</span>,
+  <span class="hljs-attr">"title"</span>: <span class="hljs-string">"updated_product"</span>,
+  <span class="hljs-attr">"category"</span>: <span class="hljs-string">"electronic"</span>
+}
+</code></pre>
+<p>Notice that this time the entire data has not changed – only the category field has been updated.</p>
+<h2 id="heading-how-to-make-a-delete-request">How to Make a DELETE Request</h2>
+<p>As the name suggests, if you wish to delete a resource from the API, you can use a DELETE request. Let's delete this product with the <code>id</code> 21.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">import</span> requests
+
+BASE_URL = <span class="hljs-string">'https://fakestoreapi.com'</span>
+
+
+response = requests.delete(<span class="hljs-string">f"<span class="hljs-subst">{BASE_URL}</span>/products/21"</span>)
+print(response.json())
+</code></pre>
+<p>The <code>requests.delete()</code> method helps us make a DELETE request on the <code>/products/&lt;product_id&gt;</code> endpoint.</p>
+<h2 id="heading-wrapping-up">Wrapping Up</h2>
+<p>In this tutorial, we learned how we can interact with web services using an awesome tool called <strong>requests</strong> in Python.</p>
+<p>I hope you enjoyed it – and thanks for reading!</p>
+
+
+                        </section>
+                        
+                            <div class="sidebar">
+                                
+                                    
+                                    <script>var localizedAdText = "ADVERTISEMENT";</script>
+                                
+                            </div>
+                        
+                    </div>
+                    <hr>
+                    
+                        <div class="post-full-author-header" data-test-label="author-header-with-bio">
+                            
+                                
+    
+    
+    
+
+    <section class="author-card" data-test-label="author-card">
+        
+            
+    <img srcset="https://cdn.hashnode.com/res/hashnode/image/upload/v1640083362830/sCAEs4Nsyv.png 60w" sizes="60px" src="https://cdn.hashnode.com/res/hashnode/image/upload/v1640083362830/sCAEs4Nsyv.png" class="author-profile-image" alt="Ashutosh Krishna" width="600" height="400" onerror="this.style.display='none'" loading="lazy" data-test-label="profile-image">
+  
+        
+
+        <section class="author-card-content ">
+            <span class="author-card-name">
+                <a href="/news/author/ashutoshkrris/" data-test-label="profile-link">
+                    
+                        Ashutosh Krishna
+                    
+                </a>
+            </span>
+            
+                
+                    <p data-test-label="author-bio">Hello! I am Ashutosh and I enjoy creating things that live on the internet. I was first introduced to programming in my freshman year and since then, I started developing Web projects.
+I am currently working at Thoughtworks India as an Application Developer.
+</p>
+                
+            
+        </section>
+    </section>
+
+                            
+                        </div>
+                        <hr>
+                    
+
+                    
+                    
+                        
+    
+
+
+<p data-test-label="social-row-cta" class="social-row">
+    If you read this far, thank the author to show them you care. <button id="tweet-btn" class="cta-button" data-test-label="tweet-button">Say Thanks</button>
+</p>
+
+
+    
+    <script>document.addEventListener("DOMContentLoaded",()=>{const t=document.getElementById("tweet-btn"),e=window.location,n="Python%20Requests%20%E2%80%93%20How%20to%20Interact%20with%20Web%20Services%20using%20Python".replace(/&#39;/g,"%27"),o="",i="@ashutoshkrris",r=Boolean("");let s;if(r&&(o||i)){const t={originalPostAuthor:"",currentPostAuthor:"Ashutosh Krishna"};s=encodeURIComponent(`Thank you ${o||t.originalPostAuthor} for writing this helpful article, and ${i||t.currentPostAuthor} for translating it.`)}else!r&&i&&(s=encodeURIComponent(`Thank you ${i} for writing this helpful article.`));const h=`window.open(\n    '${s?`https://x.com/intent/post?text=${s}%0A%0A${n}%0A%0A${e}`:`https://x.com/intent/post?text=${n}%0A%0A${e}`}',\n    'share-twitter',\n    'width=550, height=235'\n  ); return false;`;t.setAttribute("onclick",h)});</script>
+
+
+                        
+
+<div class="learn-cta-row" data-test-label="learn-cta-row">
+    <p>
+        Learn to code for free. freeCodeCamp's open source curriculum has helped more than 40,000 people get jobs as developers. <a href="https://www.freecodecamp.org/learn" class="cta-button" id="learn-to-code-cta" rel="noopener noreferrer" target="_blank">Get started</a>
+    </p>
+</div>
+
+                    
+                </section>
+                
+                    <div class="banner-ad-bottom">
+                        
+                            
+
+<div class="ad-text" data-test-label="ad-text">ADVERTISEMENT</div>
+<div style="display: block; height: auto" id="gam-ad-bottom">
+</div>
+
+                        
+                    </div>
+                
+            </article>
+        </div>
+    </main>
+
+
+            
+
+
+<footer class="site-footer">
+    <div class="footer-top">
+        <div class="footer-desc-col">
+            <p data-test-label="tax-exempt-status">freeCodeCamp is a donor-supported tax-exempt 501(c)(3) charity organization (United States Federal Tax Identification Number: 82-0779546)</p>
+            <p data-test-label="mission-statement">Our mission: to help people learn to code for free. We accomplish this by creating thousands of videos, articles, and interactive coding lessons - all freely available to the public.</p>
+            <p data-test-label="donation-initiatives">Donations to freeCodeCamp go toward our education initiatives, and help pay for servers, services, and staff.</p>
+            <p class="footer-donation" data-test-label="donate-text">
+                You can <a href="https://www.freecodecamp.org/donate/" class="inline" rel="noopener noreferrer" target="_blank">make a tax-deductible donation here</a>.
+            </p>
+        </div>
+        <div class="trending-guides" data-test-label="trending-guides">
+            <h2 id="trending-guides" class="col-header">Trending Books and Handbooks</h2>
+            <ul class="trending-guides-articles" aria-labelledby="trending-guides">
+                <li>
+                    <a href="https://www.freecodecamp.org/news/build-consume-and-document-a-rest-api/" rel="noopener noreferrer" target="_blank">REST APIs
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/how-to-write-clean-code/" rel="noopener noreferrer" target="_blank">Clean Code
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/learn-typescript-with-react-handbook/" rel="noopener noreferrer" target="_blank">TypeScript
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/learn-javascript-for-beginners/" rel="noopener noreferrer" target="_blank">JavaScript
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/how-to-build-an-ai-chatbot-with-redis-python-and-gpt/" rel="noopener noreferrer" target="_blank">AI Chatbots
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/command-line-for-beginners/" rel="noopener noreferrer" target="_blank">Command Line
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/building-consuming-and-documenting-a-graphql-api/" rel="noopener noreferrer" target="_blank">GraphQL APIs
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/complete-guide-to-css-transform-functions-and-properties/" rel="noopener noreferrer" target="_blank">CSS Transforms
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/how-to-build-scalable-access-control-for-your-web-app/" rel="noopener noreferrer" target="_blank">Access Control
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/rest-api-design-best-practices-build-a-rest-api/" rel="noopener noreferrer" target="_blank">REST API Design
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/the-php-handbook/" rel="noopener noreferrer" target="_blank">PHP
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/the-java-handbook/" rel="noopener noreferrer" target="_blank">Java
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/learn-linux-for-beginners-book-basic-to-advanced/" rel="noopener noreferrer" target="_blank">Linux
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/react-for-beginners-handbook/" rel="noopener noreferrer" target="_blank">React
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/learn-continuous-integration-delivery-and-deployment/" rel="noopener noreferrer" target="_blank">CI/CD
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/the-docker-handbook/" rel="noopener noreferrer" target="_blank">Docker
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/learn-golang-handbook/" rel="noopener noreferrer" target="_blank">Golang
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/the-python-handbook/" rel="noopener noreferrer" target="_blank">Python
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/get-started-with-nodejs/" rel="noopener noreferrer" target="_blank">Node.js
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/build-crud-operations-with-dotnet-core-handbook/" rel="noopener noreferrer" target="_blank">Todo APIs
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/how-to-use-classes-in-javascript-handbook/" rel="noopener noreferrer" target="_blank">JavaScript Classes
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/front-end-javascript-development-react-angular-vue-compared/" rel="noopener noreferrer" target="_blank">Front-End Libraries
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/the-express-handbook/" rel="noopener noreferrer" target="_blank">Express and Node.js
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/python-code-examples-sample-script-coding-tutorial-for-beginners/" rel="noopener noreferrer" target="_blank">Python Code Examples
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/clustering-in-python-a-machine-learning-handbook/" rel="noopener noreferrer" target="_blank">Clustering in Python
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/an-introduction-to-software-architecture-patterns/" rel="noopener noreferrer" target="_blank">Software Architecture
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/what-is-programming-tutorial-for-beginners/" rel="noopener noreferrer" target="_blank">Programming Fundamentals
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/learn-to-code-book/" rel="noopener noreferrer" target="_blank">Coding Career Preparation
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/become-a-full-stack-developer-and-get-a-job/" rel="noopener noreferrer" target="_blank">Full-Stack Developer Guide
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.freecodecamp.org/news/learn-python-for-javascript-developers-handbook/" rel="noopener noreferrer" target="_blank">Python for JavaScript Devs
+                    </a>
+                </li>
+            </ul>
+            <div class="spacer" style="padding: 15px 0;"></div>
+            <div>
+                <h2 id="mobile-app" class="col-header">
+                    Mobile App
+                </h2>
+                <div class="min-h-[1px] px-[15px] md:w-2/3 md:ml-[16.6%]">
+                    <ul aria-labelledby="mobile-app" class="mobile-app-container">
+                        <li>
+                            <a href="https://apps.apple.com/us/app/freecodecamp/id6446908151?itsct=apps_box_link&itscg=30200" rel="noopener noreferrer" target="_blank">
+                                <img src="https://cdn.freecodecamp.org/platform/universal/apple-store-badge.svg" lang="en" alt="Download on the App Store">
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://play.google.com/store/apps/details?id=org.freecodecamp" rel="noopener noreferrer" target="_blank">
+                                <img src="https://cdn.freecodecamp.org/platform/universal/google-play-badge.svg" lang="en" alt="Get it on Google Play">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <h2 class="col-header" data-test-label="our-nonprofit">Our Charity</h2>
+        <div class="our-nonprofit">
+
+            <a href="https://hashnode.com/" rel="noopener noreferrer" target="_blank" data-test-label="powered-by">
+                Publication powered by Hashnode
+            </a>
+            <a href="https://www.freecodecamp.org/news/about/" rel="noopener noreferrer" target="_blank" data-test-label="about">
+                About
+            </a>
+            <a href="https://www.linkedin.com/school/free-code-camp/people/" rel="noopener noreferrer" target="_blank" data-test-label="alumni">
+                Alumni Network
+            </a>
+            <a href="https://github.com/freeCodeCamp/" rel="noopener noreferrer" target="_blank" data-test-label="open-source">
+                Open Source
+            </a>
+            <a href="https://www.freecodecamp.org/news/shop/" rel="noopener noreferrer" target="_blank" data-test-label="shop">
+                Shop
+            </a>
+            <a href="https://www.freecodecamp.org/news/support/" rel="noopener noreferrer" target="_blank" data-test-label="support">
+                Support
+            </a>
+            <a href="https://www.freecodecamp.org/news/sponsors/" rel="noopener noreferrer" target="_blank" data-test-label="sponsors">
+                Sponsors
+            </a>
+            <a href="https://www.freecodecamp.org/news/academic-honesty-policy/" rel="noopener noreferrer" target="_blank" data-test-label="honesty">
+                Academic Honesty
+            </a>
+            <a href="https://www.freecodecamp.org/news/code-of-conduct/" rel="noopener noreferrer" target="_blank" data-test-label="coc">
+                Code of Conduct
+            </a>
+            <a href="https://www.freecodecamp.org/news/privacy-policy/" rel="noopener noreferrer" target="_blank" data-test-label="privacy">
+                Privacy Policy
+            </a>
+            <a href="https://www.freecodecamp.org/news/terms-of-service/" rel="noopener noreferrer" target="_blank" data-test-label="tos">
+                Terms of Service
+            </a>
+            <a href="https://www.freecodecamp.org/news/copyright-policy/" rel="noopener noreferrer" target="_blank" data-test-label="copyright">
+                Copyright Policy
+            </a>
+        </div>
+    </div>
+</footer>
+
+        </div>
+
+        
+        
+        
+
+        
+        
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"bdb993c6dde44e178aabd9555e75e4f4","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
