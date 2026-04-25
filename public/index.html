@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DevDox — ADRs on Autopilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0a0f;
+  --paper: #f5f0e8;
+  --cream: #ede8d8;
+  --rust: #c44b2b;
+  --rust-dim: #9a3820;
+  --gold: #c9973a;
+  --sage: #4a6741;
+  --slate: #2c3e50;
+  --mist: #8a9ba8;
+  --warm-white: #faf6ee;
+  --card-bg: rgba(245,240,232,0.6);
+  --border-warm: rgba(196,75,43,0.15);
+  --border-muted: rgba(10,10,15,0.1);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ===== NOISE TEXTURE OVERLAY ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ===== ANIMATED BG BLOBS ===== */
+.bg-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: drift 20s ease-in-out infinite;
+}
+.orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #c44b2b, transparent); top: -10%; left: -10%; animation-duration: 25s; }
+.orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, #c9973a, transparent); bottom: 10%; right: -5%; animation-duration: 30s; animation-delay: -10s; }
+.orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, #4a6741, transparent); top: 40%; left: 40%; animation-duration: 35s; animation-delay: -5s; }
+
+@keyframes drift {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(40px,-30px) scale(1.1); }
+  66% { transform: translate(-20px,40px) scale(0.95); }
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  padding: 0 60px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(245,240,232,0.85);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border-bottom: 1px solid var(--border-muted);
+  animation: slideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.logo span { color: var(--rust); }
+
+.nav-links {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--mist);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 1px;
+  background: var(--rust);
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 22px;
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.nav-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--rust);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.nav-cta:hover::before { transform: translateX(0); }
+.nav-cta span { position: relative; z-index: 1; }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 80px;
+  padding: 120px 80px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.hero-content { position: relative; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 28px;
+  animation: fadeRight 0.8s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.pulse-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--sage);
+  position: relative;
+}
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sage);
+  animation: sonar 2s ease-out infinite;
+}
+@keyframes sonar {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 6vw, 6.5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  animation: fadeRight 0.8s 0.35s cubic-bezier(0.16,1,0.3,1) both;
+}
+h1 em {
+  font-style: italic;
+  color: var(--rust);
+}
+h1 .ghost {
+  -webkit-text-stroke: 1.5px var(--ink);
+  color: transparent;
+}
+
+.hero-sub {
+  margin-top: 24px;
+  color: #5a6572;
+  font-size: 1rem;
+  line-height: 1.75;
+  max-width: 440px;
+  font-weight: 300;
+  animation: fadeRight 0.8s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.hero-actions {
+  margin-top: 48px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  animation: fadeRight 0.8s 0.65s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--rust);
+  color: #fff;
+  padding: 15px 32px;
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  position: relative;
+  overflow: hidden;
+}
+.btn-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.15);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+.btn-main:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(196,75,43,0.35); }
+.btn-main:hover::after { transform: scaleX(1); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  padding: 15px 20px;
+  border: 1.5px solid var(--border-muted);
+  border-radius: 2px;
+  transition: all 0.25s;
+}
+.btn-ghost:hover { border-color: var(--rust); color: var(--rust); }
+
+.hero-badge-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 40px;
+  animation: fadeRight 0.8s 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+.hero-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.badge-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  line-height: 1;
+}
+.badge-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--mist);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.badge-sep { width: 1px; background: var(--border-muted); align-self: stretch; margin: 4px 0; }
+
+/* ===== TERMINAL CARD ===== */
+.hero-visual {
+  position: relative;
+  animation: fadeLeft 0.9s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.floating-tag {
+  position: absolute;
+  background: var(--warm-white);
+  border: 1px solid var(--border-muted);
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--sage);
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  z-index: 2;
+}
+.ft-1 { top: -20px; right: -20px; animation: floatY 4s ease-in-out infinite; }
+.ft-2 { bottom: 60px; left: -30px; animation: floatY 5s ease-in-out infinite 1s; color: var(--rust); }
+@keyframes floatY {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.terminal {
+  background: var(--ink);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(10,10,15,0.25), 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative;
+}
+
+.term-bar {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+}
+.tdot { width: 12px; height: 12px; border-radius: 50%; }
+.td-r { background: #ff5f57; }
+.td-y { background: #febc2e; }
+.td-g { background: #28c840; }
+.term-title { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 0.68rem; color: rgba(255,255,255,0.3); }
+
+.term-body {
+  padding: 24px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 2;
+  color: rgba(255,255,255,0.6);
+}
+
+.tg { color: #28c840; }
+.tr { color: #ff5f57; }
+.ty { color: #febc2e; }
+.tc { color: #5ac8fa; }
+.tw { color: rgba(255,255,255,0.9); }
+.tm { color: rgba(255,255,255,0.35); }
+
+.adr-block {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(196,75,43,0.12);
+  border-left: 2px solid #c44b2b;
+  border-radius: 0 6px 6px 0;
+}
+.adr-head {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 10px;
+}
+.adr-row { margin: 3px 0; font-size: 0.75rem; }
+
+.cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: #c44b2b;
+  animation: blink 1s step-end infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ===== MARQUEE ===== */
+.marquee-wrap {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-top: 1px solid var(--border-muted);
+  border-bottom: 1px solid var(--border-muted);
+  background: var(--cream);
+  padding: 16px 0;
+}
+.marquee-track {
+  display: flex;
+  gap: 60px;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--mist);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.marquee-item span { color: var(--rust); }
+
+/* ===== SECTIONS ===== */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 120px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--rust);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.section-eyebrow::before { content: '//'; opacity: 0.5; }
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: 70px;
+}
+.section-title em { font-style: italic; color: var(--rust); }
+.section-title .ghost { -webkit-text-stroke: 1.5px var(--ink); color: transparent; }
+
+/* ===== HOW IT WORKS ===== */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--border-muted);
+  border: 1px solid var(--border-muted);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.step {
+  background: var(--warm-white);
+  padding: 48px 40px;
+  transition: background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.step::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--rust);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.step:hover { background: var(--cream); }
+.step:hover::before { transform: scaleX(1); }
+
+.step-num {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+  -webkit-text-stroke: 1px rgba(10,10,15,0.15);
+  color: transparent;
+  margin-bottom: 20px;
+}
+.step-icon {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.step h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+.step p {
+  color: #6a7580;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ===== FEATURES ===== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto auto;
+  gap: 16px;
+}
+.feature {
+  background: var(--warm-white);
+  border: 1px solid var(--border-muted);
+  border-radius: 4px;
+  padding: 36px;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  position: relative;
+  overflow: hidden;
+}
+.feature::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--rust), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.feature:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(10,10,15,0.1); }
+.feature:hover::after { transform: scaleX(1); }
+
+.f1 { grid-column: span 7; background: var(--cream); }
+.f2 { grid-column: span 5; }
+.f3 { grid-column: span 4; }
+.f4 { grid-column: span 4; }
+.f5 { grid-column: span 4; }
+
+.feat-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--rust);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: block;
+}
+.feature h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+}
+.f1 h3 { font-size: 1.7rem; }
+.feature p {
+  color: #6a7580;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+.feat-list {
+  list-style: none;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.feat-list li {
+  font-size: 0.82rem;
+  color: #5a6572;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-left: 0;
+}
+.feat-list li::before {
+  content: '→';
+  color: var(--rust);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Comment mock */
+.comment-mock {
+  margin-top: 20px;
+  background: #fff;
+  border: 1px solid var(--border-muted);
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 0.78rem;
+}
+.cm-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #6a7580;
+}
+.cm-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rust), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.cm-body { padding: 14px 16px; line-height: 1.65; }
+.cm-section { margin: 8px 0; }
+.cm-section strong { color: var(--rust); font-weight: 600; }
+.cm-section ul { margin-left: 16px; color: #6a7580; margin-top: 4px; }
+.cm-footer { font-size: 0.7rem; color: var(--mist); margin-top: 8px; font-style: italic; }
+
+/* ===== STATS ===== */
+.stats-band {
+  position: relative;
+  z-index: 1;
+  background: var(--ink);
+  padding: 80px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  overflow: hidden;
+}
+.stats-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.stat {
+  padding: 40px 60px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.stat:last-child { border-right: none; }
+.stat-num {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: var(--rust);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.06em;
+  font-weight: 300;
+}
+
+/* ===== PRICING ===== */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.plan {
+  background: var(--warm-white);
+  border: 1px solid var(--border-muted);
+  border-radius: 4px;
+  padding: 44px 36px;
+  position: relative;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  overflow: hidden;
+}
+.plan:hover { transform: translateY(-6px); box-shadow: 0 24px 70px rgba(10,10,15,0.1); }
+.plan.featured {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: transparent;
+}
+.plan.featured::before {
+  content: 'POPULAR';
+  position: absolute;
+  top: 0; right: 36px;
+  background: var(--rust);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  border-radius: 0 0 4px 4px;
+}
+
+.plan-corner {
+  position: absolute;
+  top: 0; left: 0;
+  width: 60px; height: 60px;
+  border-top: 3px solid var(--rust);
+  border-left: 3px solid var(--rust);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.plan:hover .plan-corner, .plan.featured .plan-corner { opacity: 1; }
+
+.plan-name {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 20px;
+}
+.plan.featured .plan-name { color: rgba(196,75,43,0.8); }
+
+.plan-price {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.plan.featured .plan-price { color: var(--paper); }
+.plan-period {
+  font-size: 0.75rem;
+  color: var(--mist);
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+.plan.featured .plan-period { color: rgba(255,255,255,0.35); }
+
+.plan-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.plan-features li {
+  font-size: 0.82rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #5a6572;
+}
+.plan.featured .plan-features li { color: rgba(255,255,255,0.55); }
+.plan-features li .ck { color: var(--sage); font-size: 0.9rem; flex-shrink: 0; }
+.plan-features li .cx { color: rgba(10,10,15,0.2); flex-shrink: 0; }
+.plan.featured .plan-features li .cx { color: rgba(255,255,255,0.15); }
+
+.plan-btn {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.84rem;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.pbo { border: 1.5px solid var(--border-muted); color: var(--ink); }
+.pbo:hover { border-color: var(--rust); color: var(--rust); }
+.pbf { background: var(--rust); color: #fff; }
+.pbf:hover { background: var(--rust-dim); box-shadow: 0 8px 30px rgba(196,75,43,0.4); }
+
+/* ===== CTA ===== */
+.cta-section {
+  position: relative;
+  z-index: 1;
+  background: var(--cream);
+  padding: 140px 80px;
+  text-align: center;
+  overflow: hidden;
+  border-top: 1px solid var(--border-muted);
+}
+.cta-section::before {
+  content: 'DOCUMENT';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 25vw;
+  font-weight: 900;
+  font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(10,10,15,0.04);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.cta-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 7rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 20px;
+  position: relative;
+}
+.cta-section h2 em { font-style: italic; color: var(--rust); }
+.cta-section p {
+  color: #6a7580;
+  font-size: 1rem;
+  margin-bottom: 48px;
+  font-weight: 300;
+  position: relative;
+}
+.cta-section .btn-main { position: relative; display: inline-flex; }
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border-muted);
+  padding: 40px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--warm-white);
+}
+.footer-links { display: flex; gap: 28px; list-style: none; }
+.footer-links a { color: var(--mist); text-decoration: none; font-size: 0.78rem; font-weight: 400; transition: color 0.2s; }
+.footer-links a:hover { color: var(--rust); }
+.footer-copy { font-size: 0.72rem; color: var(--mist); font-family: var(--font-mono); }
+
+/* ===== DIVIDER ===== */
+.divider {
+  position: relative; z-index: 1;
+  border: none;
+  border-top: 1px solid var(--border-muted);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeRight {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.vis {
+  opacity: 1;
+  transform: none;
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: rgba(10,10,15,0.2); border-radius: 2px; }
+
+/* ===== SELECTION ===== */
+::selection { background: var(--rust); color: #fff; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; gap: 60px; padding: 120px 40px 60px; }
+  .hero-visual { max-width: 560px; }
+  .features-grid { grid-template-columns: repeat(6,1fr); }
+  .f1 { grid-column: span 6; }
+  .f2 { grid-column: span 6; }
+  .f3,.f4,.f5 { grid-column: span 6; }
+}
+@media (max-width: 768px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .section { padding: 80px 24px; }
+  .steps { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .f1,.f2,.f3,.f4,.f5 { grid-column: span 1; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .stats-band { grid-template-columns: 1fr; padding: 60px 24px; }
+  .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 36px; }
+  .stat:last-child { border-bottom: none; }
+  footer { flex-direction: column; gap: 20px; text-align: center; padding: 32px 24px; }
+  .cta-section { padding: 100px 24px; }
+  .hero-badge-row { flex-wrap: wrap; gap: 20px; }
+}
+
+/* ===== TYPED ANIMATION ===== */
+.type-text { border-right: 2px solid var(--rust); animation: blink-cursor 0.8s step-end infinite; }
+@keyframes blink-cursor { 0%,100%{border-color:var(--rust)} 50%{border-color:transparent} }
+
+/* ===== HOVER GLOW ===== */
+.glow-hover {
+  transition: box-shadow 0.3s;
+}
+.glow-hover:hover {
+  box-shadow: 0 0 40px rgba(196,75,43,0.2);
+}
+
+/* ===== CODE HIGHLIGHT ANIMATION ===== */
+.code-line {
+  opacity: 0;
+  transform: translateX(-8px);
+  animation: codeFadeIn 0.5s forwards;
+}
+.code-line:nth-child(1) { animation-delay: 0.2s; }
+.code-line:nth-child(2) { animation-delay: 0.5s; }
+.code-line:nth-child(3) { animation-delay: 0.8s; }
+.code-line:nth-child(4) { animation-delay: 1.1s; }
+.code-line:nth-child(5) { animation-delay: 1.4s; }
+.code-line:nth-child(6) { animation-delay: 1.7s; }
+@keyframes codeFadeIn {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.adr-block {
+  opacity: 0;
+  animation: codeFadeIn 0.6s 2.1s forwards;
+}
+
+/* ===== PROGRESS DOTS ===== */
+.progress-indicator {
+  display: flex;
+  gap: 6px;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.pi-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+}
+.pi-dot.active { background: var(--rust); animation: pulseRed 1.5s ease-in-out infinite; }
+@keyframes pulseRed {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+</style>
+</head>
+<body>
+
+<!-- BG ORBS -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Dev<span>Dox</span></div>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="https://github.com/muneeb12011/devdox">GitHub</a></li>
+  </ul>
+  <a href="https://github.com/apps/devdox-ai" class="nav-cta">
+    <span>Install Free</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18A4.65 4.65 0 0 1 20 14c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .31.22.69.83.57A12 12 0 0 0 12 .3"/></svg>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow">
+      <span class="pulse-dot"></span>
+      GitHub App · Now Live
+    </div>
+
+    <h1>
+      Your PRs<br>deserve<br>
+      <em>better</em> <span class="ghost">docs.</span>
+    </h1>
+
+    <p class="hero-sub">
+      DevDox watches every pull request and automatically generates a full Architecture Decision Record — dropped right in the comment thread. No templates. No meetings. No excuses.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://github.com/apps/devdox-ai" class="btn-main">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18A4.65 4.65 0 0 1 20 14c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .31.22.69.83.57A12 12 0 0 0 12 .3"/></svg>
+        Install on GitHub
+      </a>
+      <a href="#how" class="btn-ghost">See how it works →</a>
+    </div>
+
+    <div class="hero-badge-row">
+      <div class="hero-badge">
+        <span class="badge-num">~15s</span>
+        <span class="badge-label">ADR generation</span>
+      </div>
+      <div class="badge-sep"></div>
+      <div class="hero-badge">
+        <span class="badge-num">100%</span>
+        <span class="badge-label">PR coverage</span>
+      </div>
+      <div class="badge-sep"></div>
+      <div class="hero-badge">
+        <span class="badge-num">∞</span>
+        <span class="badge-label">Repos supported</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="floating-tag ft-1">✓ ADR saved to docs/decisions/</div>
+    <div class="floating-tag ft-2">⚡ Triggered on PR open</div>
+
+    <div class="terminal glow-hover">
+      <div class="term-bar">
+        <span class="tdot td-r"></span>
+        <span class="tdot td-y"></span>
+        <span class="tdot td-g"></span>
+        <span class="term-title">devdox · pr-analysis · live</span>
+        <div class="progress-indicator">
+          <div class="pi-dot active"></div>
+          <div class="pi-dot active" style="animation-delay:0.3s"></div>
+          <div class="pi-dot active" style="animation-delay:0.6s"></div>
+        </div>
+      </div>
+      <div class="term-body">
+        <div class="code-line"><span class="tm"># PR #42 opened in</span> <span class="tc">muneeb12011/devdox</span></div>
+        <div class="code-line"><span class="tg">✓</span> <span class="tm">Fetching commits + diffs</span></div>
+        <div class="code-line"><span class="tg">✓</span> <span class="tm">Extracting linked tickets</span></div>
+        <div class="code-line"><span class="tg">✓</span> <span class="tm">Running LLM analysis</span></div>
+        <div class="code-line"><span class="tg">✓</span> <span class="tm">Saving to</span> <span class="ty">docs/decisions/2026-04-24-auth-refactor-pr42.md</span></div>
+        <div class="code-line"><span style="color:#c44b2b">[DevDox]</span> <span class="tw">ADR posted for PR #42</span> <span class="cursor"></span></div>
+
+        <div class="adr-block">
+          <div class="adr-head">🧠 Architecture Decision Record — #42</div>
+          <div class="adr-row"><span class="tc">Summary:</span> <span class="tw">Migrated auth to installation tokens for private repo access</span></div>
+          <div class="adr-row"><span class="tc">Decision:</span> <span class="tw">Use createAppAuth over personal tokens</span></div>
+          <div class="adr-row"><span class="ty">Risk:</span> <span class="tw">Token expiry must be handled — 1hr TTL</span></div>
+          <div class="adr-row"><span class="tg">Status:</span> <span class="tw">✅ Accepted · Saved to /docs/decisions/</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>✦</span> Zero setup required</div>
+    <div class="marquee-item"><span>✦</span> GitHub App integration</div>
+    <div class="marquee-item"><span>✦</span> Instant ADR generation</div>
+    <div class="marquee-item"><span>✦</span> Jira & Linear context</div>
+    <div class="marquee-item"><span>✦</span> Redis-cached results</div>
+    <div class="marquee-item"><span>✦</span> Auto-commit to repo</div>
+    <div class="marquee-item"><span>✦</span> 100% PR coverage</div>
+    <div class="marquee-item"><span>✦</span> Zero setup required</div>
+    <div class="marquee-item"><span>✦</span> GitHub App integration</div>
+    <div class="marquee-item"><span>✦</span> Instant ADR generation</div>
+    <div class="marquee-item"><span>✦</span> Jira & Linear context</div>
+    <div class="marquee-item"><span>✦</span> Redis-cached results</div>
+    <div class="marquee-item"><span>✦</span> Auto-commit to repo</div>
+    <div class="marquee-item"><span>✦</span> 100% PR coverage</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="reveal">
+    <div class="section-eyebrow">how it works</div>
+    <h2 class="section-title">Zero friction.<br><span class="ghost">Full</span> <em>coverage.</em></h2>
+  </div>
+
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num">01</div>
+      <span class="step-icon">⚡</span>
+      <h3>Install the GitHub App</h3>
+      <p>One click. Pick your repos. DevDox gets read access to PRs and write access to post comments. Works in under 60 seconds.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <span class="step-icon">🔍</span>
+      <h3>Open any PR</h3>
+      <p>DevDox wakes up the moment a PR is opened. It reads commits, diffs, linked tickets, and PR discussions for full context.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <span class="step-icon">📄</span>
+      <h3>Get your ADR instantly</h3>
+      <p>A structured Architecture Decision Record drops in the PR thread and saves to <code style="background:var(--cream);padding:2px 6px;border-radius:2px;font-size:0.8rem">docs/decisions/</code>. Done.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="reveal">
+    <div class="section-eyebrow">features</div>
+    <h2 class="section-title">Built for teams<br>who ship <em>fast.</em></h2>
+  </div>
+
+  <div class="features-grid reveal">
+    <div class="feature f1">
+      <span class="feat-tag">Core</span>
+      <h3>AI-powered ADR generation</h3>
+      <p>State-of-the-art LLMs synthesize your PR context into structured decision records — no prompting required. Just open a PR and merge.</p>
+      <div class="comment-mock">
+        <div class="cm-header">
+          <div class="cm-avatar">D</div>
+          <span><strong style="color:var(--ink)">devdox-ai</strong> &nbsp;·&nbsp; bot commented just now</span>
+        </div>
+        <div class="cm-body">
+          <div class="cm-section"><strong>🧠 Summary</strong><br>Replaced personal access token with GitHub App installation auth to support private repositories.</div>
+          <div class="cm-section"><strong>⚖️ Key Decisions</strong>
+            <ul><li>Use createAppAuth with installation tokens</li><li>Token passed through analyzePR service layer</li></ul>
+          </div>
+          <div class="cm-section"><strong>⚠️ Risks</strong>
+            <ul><li>Installation tokens expire after 1 hour — refresh logic required</li></ul>
+          </div>
+          <div class="cm-footer">Powered by DevDox · Saved to docs/decisions/2026-04-24-auth-refactor-pr42.md</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature f2">
+      <span class="feat-tag">Storage</span>
+      <h3>Auto-saved to your repo</h3>
+      <p>Every ADR is committed directly to <code style="font-family:var(--font-mono);font-size:0.82em;background:var(--cream);padding:1px 5px;border-radius:2px">docs/decisions/</code> with a timestamped filename.</p>
+      <ul class="feat-list">
+        <li>Versioned alongside your code</li>
+        <li>Searchable by PR number or date</li>
+        <li>Markdown format, always readable</li>
+        <li>Never loses context</li>
+      </ul>
+    </div>
+
+    <div class="feature f3">
+      <span class="feat-tag">Performance</span>
+      <h3>Redis-cached results</h3>
+      <p>Re-open the same PR and DevDox responds instantly with zero extra API cost.</p>
+      <ul class="feat-list">
+        <li>Upstash Redis integration</li>
+        <li>Sub-100ms cache hits</li>
+        <li>Smart invalidation</li>
+      </ul>
+    </div>
+
+    <div class="feature f4">
+      <span class="feat-tag">Integrations</span>
+      <h3>Ticket context aware</h3>
+      <p>Parses Jira, Linear, and GitHub issue IDs from PR titles to pull in extra context automatically.</p>
+      <ul class="feat-list">
+        <li>JIRA-123 and LIN-456 extraction</li>
+        <li>Slack ingestion (coming soon)</li>
+        <li>Custom patterns via config</li>
+      </ul>
+    </div>
+
+    <div class="feature f5">
+      <span class="feat-tag">Coverage</span>
+      <h3>Every PR, no exceptions</h3>
+      <p>DevDox processes every PR automatically — no manual triggers, no forgotten docs, no gaps.</p>
+      <ul class="feat-list">
+        <li>Webhook-triggered, instant</li>
+        <li>All branches supported</li>
+        <li>Draft PR awareness</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAND -->
+<div class="stats-band reveal">
+  <div class="stat">
+    <span class="stat-num">~15s</span>
+    <div class="stat-label">Average ADR generation time</div>
+  </div>
+  <div class="stat">
+    <span class="stat-num">100%</span>
+    <div class="stat-label">PR coverage, zero manual effort</div>
+  </div>
+  <div class="stat">
+    <span class="stat-num">∞</span>
+    <div class="stat-label">Repos supported per installation</div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="reveal">
+    <div class="section-eyebrow">pricing</div>
+    <h2 class="section-title">Simple.<br><em>No surprises.</em></h2>
+  </div>
+
+  <div class="pricing-grid reveal">
+    <div class="plan">
+      <div class="plan-corner"></div>
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-period">forever free</div>
+      <ul class="plan-features">
+        <li><span class="ck">✓</span> 3 repos</li>
+        <li><span class="ck">✓</span> 50 ADRs / month</li>
+        <li><span class="ck">✓</span> GitHub comments</li>
+        <li><span class="ck">✓</span> docs/decisions/ saving</li>
+        <li><span class="cx">✗</span> Ticket context</li>
+        <li><span class="cx">✗</span> Priority support</li>
+      </ul>
+      <a href="https://github.com/apps/devdox-ai" class="plan-btn pbo">Get started free</a>
+    </div>
+
+    <div class="plan featured">
+      <div class="plan-corner"></div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$19</div>
+      <div class="plan-period">per month · billed monthly</div>
+      <ul class="plan-features">
+        <li><span class="ck">✓</span> Unlimited repos</li>
+        <li><span class="ck">✓</span> Unlimited ADRs</li>
+        <li><span class="ck">✓</span> GitHub comments</li>
+        <li><span class="ck">✓</span> docs/decisions/ saving</li>
+        <li><span class="ck">✓</span> Jira / Linear context</li>
+        <li><span class="ck">✓</span> Priority support</li>
+      </ul>
+      <a href="#" class="plan-btn pbf">Start free trial</a>
+    </div>
+
+    <div class="plan">
+      <div class="plan-corner"></div>
+      <div class="plan-name">Team</div>
+      <div class="plan-price">$49</div>
+      <div class="plan-period">per month · billed monthly</div>
+      <ul class="plan-features">
+        <li><span class="ck">✓</span> Everything in Pro</li>
+        <li><span class="ck">✓</span> Slack context ingestion</li>
+        <li><span class="ck">✓</span> Custom ADR templates</li>
+        <li><span class="ck">✓</span> Analytics dashboard</li>
+        <li><span class="ck">✓</span> SAML SSO</li>
+        <li><span class="ck">✓</span> Dedicated support</li>
+      </ul>
+      <a href="#" class="plan-btn pbo">Contact us</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="reveal">
+    <h2>Ship it.<br><em>Document it.</em></h2>
+    <p>One install. Every PR. Forever documented.</p>
+    <a href="https://github.com/apps/devdox-ai" class="btn-main" style="display:inline-flex">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18A4.65 4.65 0 0 1 20 14c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22v3.29c0 .31.22.69.83.57A12 12 0 0 0 12 .3"/></svg>
+      Install DevDox Free
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Dev<span>Dox</span></div>
+  <ul class="footer-links">
+    <li><a href="https://github.com/muneeb12011/devdox">GitHub</a></li>
+    <li><a href="#">Docs</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 DevDox. Built with care.</div>
+</footer>
+
+<script>
+// Scroll reveal with stagger
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, idx) => {
+    if (e.isIntersecting) {
+      e.target.classList.add('vis');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+revealEls.forEach(el => io.observe(el));
+
+// Stagger children on reveal
+const staggerParents = document.querySelectorAll('.steps, .features-grid, .pricing-grid');
+const staggerIO = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const children = entry.target.children;
+      Array.from(children).forEach((child, i) => {
+        child.style.opacity = '0';
+        child.style.transform = 'translateY(30px)';
+        child.style.transition = `opacity 0.7s ${i * 0.1}s cubic-bezier(0.16,1,0.3,1), transform 0.7s ${i * 0.1}s cubic-bezier(0.16,1,0.3,1)`;
+        setTimeout(() => {
+          child.style.opacity = '1';
+          child.style.transform = 'none';
+        }, 100 + i * 80);
+      });
+      staggerIO.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+staggerParents.forEach(el => staggerIO.observe(el));
+
+// Parallax orbs on mouse move
+document.addEventListener('mousemove', (e) => {
+  const mx = (e.clientX / window.innerWidth - 0.5);
+  const my = (e.clientY / window.innerHeight - 0.5);
+  document.querySelectorAll('.orb').forEach((orb, i) => {
+    const depth = (i + 1) * 12;
+    orb.style.transform = `translate(${mx * depth}px, ${my * depth}px) scale(1)`;
+  });
+});
+
+// Smooth number counter for stats
+function animateCounter(el, target, suffix = '') {
+  const start = 0;
+  const dur = 1800;
+  const startTime = performance.now();
+  const isSymbol = isNaN(parseFloat(target));
+  if (isSymbol) return;
+  const numTarget = parseFloat(target);
+  const isDecimal = target.includes('.');
+  const step = (now) => {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / dur, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = numTarget * eased;
+    el.textContent = (isDecimal ? current.toFixed(1) : Math.floor(current)) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const statNums = document.querySelectorAll('.stat-num');
+const statsIO = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const text = el.textContent.trim();
+      const match = text.match(/^([~]?)([0-9.]+)(.*)$/);
+      if (match) {
+        const prefix = match[1];
+        const num = match[2];
+        const suffix = match[3];
+        el.textContent = prefix + '0' + suffix;
+        animateCounter({ set textContent(v) { el.textContent = prefix + v; } }, num, suffix);
+      }
+      statsIO.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+statNums.forEach(el => statsIO.observe(el));
+
+// Nav shrink on scroll
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 60) {
+    nav.style.height = '58px';
+    nav.style.borderBottomColor = 'rgba(10,10,15,0.12)';
+  } else {
+    nav.style.height = '70px';
+    nav.style.borderBottomColor = 'rgba(10,10,15,0.08)';
+  }
+});
+
+// Cursor ripple effect
+document.addEventListener('click', (e) => {
+  const ripple = document.createElement('div');
+  ripple.style.cssText = `
+    position: fixed;
+    left: ${e.clientX - 10}px;
+    top: ${e.clientY - 10}px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(196,75,43,0.5);
+    pointer-events: none;
+    z-index: 9998;
+    animation: rippleOut 0.6s ease-out forwards;
+  `;
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+});
+
+const style = document.createElement('style');
+style.textContent = `
+@keyframes rippleOut {
+  to { transform: scale(4); opacity: 0; }
+}`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>
