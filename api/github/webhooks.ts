@@ -1,23 +1,8 @@
 // api/github/webhooks.ts
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import * as dotenv from "dotenv";
 dotenv.config({ override: true });
 
-import { Webhooks } from "@octokit/webhooks";
-import { handlePROpened, handleCommentCreated } from "../../src/bot/index";
-const webhooks = new Webhooks({ secret: process.env.WEBHOOK_SECRET! });
-
-webhooks.on("pull_request.opened", async ({ payload }) => {
-  await handlePROpened({ payload } as any);
-});
-
-webhooks.on("issue_comment.created", async ({ payload }) => {
-  await handleCommentCreated({ payload } as any);
-});
-
-webhooks.onError((error) => {
-  console.error("[DevDox] Webhook error:", error.message);
-});
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "GET") {
@@ -38,6 +23,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const body = await getRawBody(req);
 
+  // Dynamic import to handle ESM packages in CommonJS context
+  const { Webhooks } = await import("@octokit/webhooks");
+  const { handlePROpened } = await import("../../src/bot/handler");
+  const { handleCommentCreated } = await import("../../src/bot/commands");
+
+  const webhooks = new Webhooks({ secret: process.env.WEBHOOK_SECRET! });
+
+  webhooks.on("pull_request.opened", async ({ payload }) => {
+    await handlePROpened({ payload } as any);
+  });
+
+  webhooks.on("issue_comment.created", async ({ payload }) => {
+    await handleCommentCreated({ payload } as any);
+  });
+
+  webhooks.onError((error) => {
+    console.error("[DevDox] Webhook error:", error.message);
+  });
+
   try {
     const verified = await webhooks.verify(body.toString(), signature);
     if (!verified) {
@@ -47,10 +51,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: "Signature verification failed" });
   }
 
-  // Respond to GitHub immediately — must be within 10s
+  // Respond to GitHub immediately
   res.status(200).json({ ok: true });
 
-  // Process async after response is sent
+  // Process async after response
   try {
     await webhooks.receive({
       id,
@@ -62,7 +66,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-// Read raw body from Vercel request
 function getRawBody(req: VercelRequest): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
