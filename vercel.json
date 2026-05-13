@@ -5,18 +5,14 @@
       "maxDuration": 60
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/health",
-      "dest": "/api/github/webhooks"
+      "source": "/api/github/webhooks",
+      "destination": "/api/github/webhooks"
     },
     {
-      "src": "/api/github/webhooks",
-      "dest": "/api/github/webhooks"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "source": "/health",
+      "destination": "/api/github/webhooks"
     }
   ]
 }
