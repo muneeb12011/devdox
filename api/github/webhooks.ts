@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ override: true });
 
 import { Webhooks } from "@octokit/webhooks";
-import { handlePROpened, handleCommentCreated } from "../../bot/index";
+import { handlePROpened, handleCommentCreated } from "../../src/bot/index";
 const webhooks = new Webhooks({ secret: process.env.WEBHOOK_SECRET! });
 
 webhooks.on("pull_request.opened", async ({ payload }) => {
