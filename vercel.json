@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "functions": {
+    "api/github/webhooks.ts": {
+      "maxDuration": 60
+    }
+  },
+  "routes": [
+    {
+      "src": "/health",
+      "dest": "/api/github/webhooks"
+    },
+    {
+      "src": "/api/github/webhooks",
+      "dest": "/api/github/webhooks"
+    }
+  ]
+}

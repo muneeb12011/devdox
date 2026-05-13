@@ -11,8 +11,8 @@ export async function fetchPRData(prUrl: string, token?: string) {
 
   const [pr, commits, files] = await Promise.all([
     octokit.pulls.get({ owner, repo, pull_number: Number(pull_number) }),
-    octokit.pulls.listCommits({ owner, repo, pull_number: Number(pull_number) }),
-    octokit.pulls.listFiles({ owner, repo, pull_number: Number(pull_number) }),
+    octokit.pulls.listCommits({ owner, repo, pull_number: Number(pull_number), per_page: 50 }),
+    octokit.pulls.listFiles({ owner, repo, pull_number: Number(pull_number), per_page: 50 }),
   ]);
 
   return {

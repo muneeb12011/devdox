@@ -1,43 +1,53 @@
+// src/lib/llm.ts
 import axios from "axios";
 import pRetry, { AbortError } from "p-retry";
 
-export async function analyzeWithLLM(input: {
+interface LLMInput {
   prTitle: string;
   prBody: string;
   commits: string[];
+  files: string[];
+  jira: string[];
   slack: string[];
-}) {
-  const prompt = `
-You are a senior staff engineer writing Architecture Decision Records.
+}
 
-Extract the REAL reasoning ("why") behind this PR from messy inputs.
+export async function analyzeWithLLM(input: LLMInput) {
+  const prompt = `You are a senior staff engineer writing Architecture Decision Records.
 
-INPUT:
+Extract the REAL reasoning ("why") behind this PR from the inputs below.
+Use Jira ticket details and Slack discussions as primary context for the "why".
+
 PR TITLE: ${input.prTitle}
 
 PR DESCRIPTION:
-${input.prBody}
+${input.prBody || "No description provided."}
 
 COMMITS:
-${input.commits.join("\n")}
+${input.commits.slice(0, 20).join("\n") || "No commits."}
 
-TEAM DISCUSSIONS:
-${input.slack.join("\n")}
+FILES CHANGED:
+${input.files.slice(0, 20).join("\n") || "No files."}
+
+JIRA TICKETS:
+${input.jira.join("\n\n") || "No Jira tickets linked."}
+
+SLACK DISCUSSIONS:
+${input.slack.join("\n") || "No Slack context found."}
 
 OUTPUT RULES:
 - Return ONLY raw JSON, no markdown, no backticks, no extra text
-- decisions must be an array of plain strings, NOT objects
-- risks must be an array of plain strings, NOT objects
-- Keep each string under 20 words
+- decisions: array of plain strings (max 5 items, each under 20 words)
+- risks: array of plain strings (max 5 items, each under 20 words)
+- summary: one sentence under 30 words
+- suggestedADR: full markdown ADR with sections: Problem, Decision, Context, Consequences, Status
 
-EXACT OUTPUT FORMAT:
+EXACT FORMAT:
 {
   "summary": "one sentence describing what changed",
   "decisions": ["decision one", "decision two"],
   "risks": ["risk one", "risk two"],
-  "suggestedADR": "full markdown ADR text here"
-}
-`;
+  "suggestedADR": "# ADR\\n\\n## Problem\\n..."
+}`;
 
   return pRetry(
     async () => {
@@ -47,17 +57,14 @@ EXACT OUTPUT FORMAT:
           "https://api.groq.com/openai/v1/chat/completions",
           {
             model: "llama-3.1-8b-instant",
-            max_tokens: 1500,
+            max_tokens: 2000,
             temperature: 0.1,
             messages: [
               {
                 role: "system",
-                content: "You are a JSON-only API. You never output markdown, backticks, or explanations. You output only valid raw JSON.",
+                content: "You are a JSON-only API. Output only valid raw JSON. Never use markdown backticks.",
               },
-              {
-                role: "user",
-                content: prompt,
-              },
+              { role: "user", content: prompt },
             ],
           },
           {
@@ -65,6 +72,7 @@ EXACT OUTPUT FORMAT:
               Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
               "content-type": "application/json",
             },
+            timeout: 30000,
           }
         );
       } catch (err: any) {
@@ -79,30 +87,21 @@ EXACT OUTPUT FORMAT:
       }
 
       const content = res.data.choices[0].message.content;
-      console.log("[LLM] Raw response preview:", content.substring(0, 300));
 
-      // Extract outermost JSON object
       const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        console.error("[LLM] No JSON object found in response");
-        throw new Error("No JSON found in LLM response");
-      }
+      if (!jsonMatch) throw new Error("No JSON found in LLM response");
 
       let parsed: any;
       try {
         parsed = JSON.parse(jsonMatch[0]);
-      } catch (parseErr) {
-        console.error("[LLM] JSON parse failed:", jsonMatch[0].substring(0, 300));
+      } catch {
         throw new Error("LLM returned invalid JSON");
       }
 
-      // Normalize decisions and risks — flatten objects to strings if Llama misbehaves
       const flatten = (arr: any[]): string[] =>
-        arr.map((item) => {
+        (arr || []).map((item) => {
           if (typeof item === "string") return item;
-          if (typeof item === "object" && item !== null) {
-            return Object.values(item).join(" — ");
-          }
+          if (typeof item === "object" && item !== null) return Object.values(item).join(" — ");
           return String(item);
         });
 
@@ -116,8 +115,9 @@ EXACT OUTPUT FORMAT:
     {
       retries: 3,
       minTimeout: 1000,
+      maxTimeout: 10000,
       onFailedAttempt: (err: any) => {
-        console.error(`[LLM] Attempt ${err.attemptNumber} failed. Retries left: ${err.retriesLeft} — ${err.message}`);
+        console.error(`[LLM] Attempt ${err.attemptNumber} failed (${err.retriesLeft} left): ${err.message}`);
       },
     }
   );

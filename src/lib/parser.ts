@@ -1,14 +1,12 @@
 // src/lib/parser.ts
 
+// Extract ticket IDs like JIRA-123, LIN-456, GH-789
 export function extractTicketIds(text: string): string[] {
-  const regex = /([A-Z]+-\d+)/g;
-  return text.match(regex) || [];
+  const regex = /\b([A-Z]+-\d+)\b/g;
+  return [...new Set(text.match(regex) || [])];
 }
 
-// Simulated Slack context (replace later with real API)
-export async function getSlackContext(_: string[]) {
-  return [
-    "We chose Redis because of latency issues in Postgres",
-    "This might break legacy auth flow",
-  ];
+// Summarize changed files for LLM context
+export function summarizeFiles(files: { filename: string; status: string; changes: number }[]): string[] {
+  return files.map((f) => `${f.status}: ${f.filename} (+${f.changes} changes)`);
 }
