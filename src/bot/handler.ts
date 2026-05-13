@@ -1,5 +1,4 @@
-import { Octokit } from "@octokit/rest";
-import { createAppAuth } from "@octokit/auth-app";
+// src/bot/handler.ts
 import { analyzePR } from "../services/analyzePR";
 import { formatADRComment } from "./formatter";
 import { AnalysisResult } from "../schemas/analysis.schema";
@@ -9,6 +8,9 @@ const SKIP_PATTERNS = [/\bwip\b/i, /\bdraft\b/i, /\btypo\b/i, /^test:/i, /^chore
 
 // ── AUTH ───────────────────────────────────────────────────────
 export async function getInstallationAuth(installationId: number) {
+  const { Octokit } = await import("@octokit/rest");
+  const { createAppAuth } = await import("@octokit/auth-app");
+
   const rawKey = process.env.PRIVATE_KEY!
     .replace(/\\n/g, "\n")
     .replace(/^"/, "")
@@ -26,7 +28,7 @@ export async function getInstallationAuth(installationId: number) {
 }
 
 // ── ENSURE DOCS FOLDER ─────────────────────────────────────────
-async function ensureDocsFolder(octokit: Octokit, owner: string, repo: string) {
+async function ensureDocsFolder(octokit: any, owner: string, repo: string) {
   try {
     await octokit.repos.getContent({ owner, repo, path: "docs/decisions" });
   } catch {
@@ -45,7 +47,7 @@ async function ensureDocsFolder(octokit: Octokit, owner: string, repo: string) {
 
 // ── SAVE ADR TO REPO ───────────────────────────────────────────
 export async function saveADRToRepo(
-  octokit: Octokit,
+  octokit: any,
   owner: string,
   repo: string,
   pull_number: number,
@@ -111,7 +113,7 @@ export async function handlePROpened({ payload }: { payload: any }) {
   await setCache(idempotencyKey, "true").catch(() => {});
 
   // ── AUTH ───────────────────────────────────────────────────────
-  let octokit: Octokit, token: string;
+  let octokit: any, token: string;
   try {
     const auth = await getInstallationAuth(installationId);
     octokit = auth.octokit;

@@ -1,6 +1,7 @@
 import { Octokit } from "@octokit/rest";
 
 export async function fetchPRData(prUrl: string, token?: string) {
+  const { Octokit } = await import("@octokit/rest");
   const octokit = new Octokit({
     auth: token || process.env.GITHUB_TOKEN,
   });
