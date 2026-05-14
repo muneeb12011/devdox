@@ -51,10 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: "Signature verification failed" });
   }
 
-  // Respond to GitHub immediately
-  res.status(200).json({ ok: true });
-
-  // Process async after response
+  // Process FIRST — Vercel cuts off async work after response
   try {
     await webhooks.receive({
       id,
@@ -64,6 +61,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err: any) {
     console.error("[DevDox] Processing error:", err.message);
   }
+
+  // Respond AFTER processing is complete
+  return res.status(200).json({ ok: true });
 }
 
 function getRawBody(req: VercelRequest): Promise<Buffer> {
