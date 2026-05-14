@@ -228,7 +228,7 @@ export async function handlePROpened({
     p.test(prTitle)
   );
 
-  if ((isMinorTitle || changedFiles < 2) && !forceADR) {
+  if (isMinorTitle && changedFiles < 1 && !forceADR) {
     await octokit.issues
       .createComment({
         owner,
