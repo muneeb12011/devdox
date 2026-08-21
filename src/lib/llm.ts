@@ -1,5 +1,4 @@
 // src/lib/llm.ts
-
 import axios from "axios";
 import pRetry, { AbortError } from "p-retry";
 
@@ -9,48 +8,114 @@ interface LLMInput {
   commits: string[];
   files: string[];
   jira: string[];
+  linear: string[];
   slack: string[];
 }
 
 export async function analyzeWithLLM(input: LLMInput) {
   console.log("[LLM] Preparing prompt...");
 
-  const prompt = `You are a senior staff engineer writing Architecture Decision Records.
+  const hasTicketContext = input.jira.length > 0 || input.linear.length > 0;
+  const hasSlack = input.slack.length > 0;
 
-Extract the REAL reasoning ("why") behind this PR from the inputs below.
-Use Jira ticket details and Slack discussions as primary context for the "why".
+  const prompt = `You are a principal engineer writing a detailed, insightful Architecture Decision Record (ADR).
 
-PR TITLE: ${input.prTitle}
+Your goal is to extract the REAL reasoning — the "why" — behind this pull request.
+Do NOT describe what the code does. Explain WHY the team made these choices, what alternatives existed, and what the long-term consequences are.
+${hasTicketContext ? "Ticket context (Jira/Linear) is your PRIMARY source for reasoning — use it heavily." : "No tickets linked. Infer reasoning carefully from commits and file changes."}
+${hasSlack ? "Slack discussions contain real team decisions — extract concerns and rationale from them." : ""}
 
-PR DESCRIPTION:
-${input.prBody || "No description provided."}
+═══════════════════════════════════════════
+PR INFORMATION
+═══════════════════════════════════════════
 
-COMMITS:
+TITLE: ${input.prTitle}
+
+DESCRIPTION:
+${input.prBody || "No description provided. Infer from commits and files."}
+
+═══════════════════════════════════════════
+CODE CHANGES
+═══════════════════════════════════════════
+
+COMMITS (${input.commits.length} total):
 ${input.commits.slice(0, 20).join("\n") || "No commits."}
 
-FILES CHANGED:
-${input.files.slice(0, 20).join("\n") || "No files."}
+FILES CHANGED (${input.files.length} total):
+${input.files.slice(0, 30).join("\n") || "No files."}
+
+═══════════════════════════════════════════
+TICKET CONTEXT
+═══════════════════════════════════════════
 
 JIRA TICKETS:
 ${input.jira.join("\n\n") || "No Jira tickets linked."}
 
-SLACK DISCUSSIONS:
+LINEAR ISSUES:
+${input.linear.join("\n\n") || "No Linear issues linked."}
+
+═══════════════════════════════════════════
+TEAM DISCUSSIONS
+═══════════════════════════════════════════
+
+SLACK THREADS:
 ${input.slack.join("\n") || "No Slack context found."}
 
+═══════════════════════════════════════════
+OUTPUT REQUIREMENTS
+═══════════════════════════════════════════
+
+SUMMARY — 1 sentence, max 30 words:
+  - State WHAT changed and WHY — not just "Updated X"
+  - Example: "Migrated auth to installation tokens because personal tokens couldn't be scoped per-repo"
+
+DECISIONS — 3 to 5 items:
+  - Format each as: "Chose X over Y because Z"
+  - Focus on architectural choices, not implementation details
+  - Be specific — avoid vague statements like "improved performance"
+
+RISKS — 2 to 4 items:
+  - Real risks only — not obvious boilerplate
+  - Include mitigations where possible
+  - Format: "Risk: X — Mitigation: Y"
+
+SUGGESTED ADR — full markdown with ALL these sections:
+  ## Problem
+  What pain point, requirement, or failure drove this change?
+
+  ## Context
+  Background info, constraints, team/business context, prior state
+
+  ## Decision
+  The specific choices made and the reasoning behind each
+
+  ## Alternatives Considered
+  What else was evaluated, and why it was rejected
+
+  ## Consequences
+  Positive outcomes, negative tradeoffs, future implications, what to watch for
+
+  ## Status
+  Accepted
+
 OUTPUT RULES:
-- Return ONLY raw JSON
-- No markdown
-- No backticks
-- No explanations
-- decisions: max 5 items
-- risks: max 5 items
+- Return ONLY raw JSON — no markdown fences, no backticks, no preamble, no explanation
+- decisions and risks must be arrays of plain strings
+- suggestedADR must be a single string with \\n for newlines
 
 EXACT FORMAT:
 {
-  "summary": "one sentence describing what changed",
-  "decisions": ["decision one"],
-  "risks": ["risk one"],
-  "suggestedADR": "# ADR\\n\\n## Problem\\n..."
+  "summary": "one sentence — what changed and why",
+  "decisions": [
+    "Chose X over Y because Z",
+    "Adopted X to solve Y",
+    "Removed X in favor of Y to reduce Z"
+  ],
+  "risks": [
+    "Risk: X may break Y — Mitigation: Z",
+    "Risk: X requires manual Y — watch for Z"
+  ],
+  "suggestedADR": "## Problem\\n\\n...\\n\\n## Context\\n\\n...\\n\\n## Decision\\n\\n...\\n\\n## Alternatives Considered\\n\\n...\\n\\n## Consequences\\n\\n...\\n\\n## Status\\n\\nAccepted"
 }`;
 
   return pRetry(
@@ -64,13 +129,13 @@ EXACT FORMAT:
           "https://api.groq.com/openai/v1/chat/completions",
           {
             model: "llama-3.1-8b-instant",
-            temperature: 0.1,
-            max_tokens: 2000,
+            temperature: 0.2,
+            max_tokens: 3000,
             messages: [
               {
                 role: "system",
                 content:
-                  "You are a JSON-only API. Output only valid raw JSON.",
+                  "You are a JSON-only API that writes detailed, insightful Architecture Decision Records. Output only valid raw JSON. Never use markdown backticks. Never include preamble or explanation outside the JSON object.",
               },
               {
                 role: "user",
@@ -90,29 +155,18 @@ EXACT FORMAT:
         const status = err.response?.status;
         const data = err.response?.data;
 
-        console.error(
-          "[LLM] Groq API error:",
-          status,
-          JSON.stringify(data)
-        );
+        console.error("[LLM] Groq API error:", status, JSON.stringify(data));
 
-        if (
-          status === 400 ||
-          status === 401 ||
-          status === 403
-        ) {
+        if (status === 400 || status === 401 || status === 403) {
           throw new AbortError(
-            `Groq fatal error ${status}: ${
-              data?.error?.message || "Unknown error"
-            }`
+            `Groq fatal error ${status}: ${data?.error?.message || "Unknown error"}`
           );
         }
 
         throw err;
       }
 
-      const content =
-        res?.data?.choices?.[0]?.message?.content;
+      const content = res?.data?.choices?.[0]?.message?.content;
 
       if (!content) {
         throw new Error("Groq returned empty response");
@@ -124,10 +178,7 @@ EXACT FORMAT:
 
       if (!jsonMatch) {
         console.error("[LLM] Invalid response:", content);
-
-        throw new Error(
-          "No JSON found in LLM response"
-        );
+        throw new Error("No JSON found in LLM response");
       }
 
       let parsed: any;
@@ -135,51 +186,31 @@ EXACT FORMAT:
       try {
         parsed = JSON.parse(jsonMatch[0]);
       } catch (err) {
-        console.error(
-          "[LLM] Failed to parse JSON:",
-          jsonMatch[0]
-        );
-
+        console.error("[LLM] Failed to parse JSON:", jsonMatch[0]);
         throw new Error("LLM returned invalid JSON");
       }
 
       const flatten = (arr: any[]): string[] =>
         (arr || []).map((item) => {
-          if (typeof item === "string") {
-            return item;
-          }
-
-          if (
-            typeof item === "object" &&
-            item !== null
-          ) {
+          if (typeof item === "string") return item;
+          if (typeof item === "object" && item !== null)
             return Object.values(item).join(" — ");
-          }
-
           return String(item);
         });
 
       console.log("[LLM] Analysis parsed successfully");
 
       return {
-        summary: String(
-          parsed.summary ?? "No summary provided"
-        ),
-
+        summary: String(parsed.summary ?? "No summary provided"),
         decisions: flatten(parsed.decisions ?? []),
-
         risks: flatten(parsed.risks ?? []),
-
-        suggestedADR: String(
-          parsed.suggestedADR ?? "No ADR generated"
-        ),
+        suggestedADR: String(parsed.suggestedADR ?? "No ADR generated"),
       };
     },
     {
       retries: 3,
       minTimeout: 1000,
       maxTimeout: 10000,
-
       onFailedAttempt: (err: any) => {
         console.error(
           `[LLM] Attempt ${err.attemptNumber} failed (${err.retriesLeft} left): ${err.message}`
