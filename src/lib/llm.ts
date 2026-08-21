@@ -2,6 +2,8 @@
 import axios from "axios";
 import pRetry, { AbortError } from "p-retry";
 
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
+
 interface LLMInput {
   prTitle: string;
   prBody: string;
@@ -121,6 +123,7 @@ EXACT FORMAT:
   return pRetry(
     async () => {
       console.log("[LLM] Sending request to Groq...");
+      console.log("[LLM] Using model:", GROQ_MODEL);
 
       let res: any;
 
@@ -128,7 +131,7 @@ EXACT FORMAT:
         res = await axios.post(
           "https://api.groq.com/openai/v1/chat/completions",
           {
-            model: "llama-3.1-8b-instant",
+            model: GROQ_MODEL,
             temperature: 0.2,
             max_tokens: 3000,
             messages: [
@@ -157,7 +160,7 @@ EXACT FORMAT:
 
         console.error("[LLM] Groq API error:", status, JSON.stringify(data));
 
-        if (status === 400 || status === 401 || status === 403) {
+        if (status === 400 || status === 401 || status === 403 || status === 404) {
           throw new AbortError(
             `Groq fatal error ${status}: ${data?.error?.message || "Unknown error"}`
           );
