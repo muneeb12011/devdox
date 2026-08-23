@@ -27,6 +27,9 @@ Do NOT describe what the code does. Explain WHY the team made these choices, wha
 ${hasTicketContext ? "Ticket context (Jira/Linear) is your PRIMARY source for reasoning — use it heavily." : "No tickets linked. Infer reasoning carefully from commits and file changes."}
 ${hasSlack ? "Slack discussions contain real team decisions — extract concerns and rationale from them." : ""}
 
+GROUNDING RULE (applies to every section below):
+Every claim — decision, risk, or consequence — must be traceable to something in COMMITS, FILES CHANGED, or the ticket/Slack context provided. If you cannot point to specific evidence for a claim, do not include it. It is better to return fewer, well-grounded items than to pad output with generic or invented claims.
+
 ═══════════════════════════════════════════
 PR INFORMATION
 ═══════════════════════════════════════════
@@ -75,11 +78,13 @@ DECISIONS — 3 to 5 items:
   - Format each as: "Chose X over Y because Z"
   - Focus on architectural choices, not implementation details
   - Be specific — avoid vague statements like "improved performance"
+  - If the PR is small and only supports 1-2 real decisions, return only those — do not stretch to fill 3
 
-RISKS — 2 to 4 items:
-  - Real risks only — not obvious boilerplate
-  - Include mitigations where possible
-  - Format: "Risk: X — Mitigation: Y"
+RISKS — 0 to 4 items:
+  - Only include a risk if you can point to a specific file, commit, or ticket that supports it
+  - Real risks only — not generic boilerplate like "may introduce bugs" or "could affect performance"
+  - Include a mitigation where possible: "Risk: X — Mitigation: Y"
+  - If this change has no meaningful risk (e.g., docs-only, config-only, comment changes), return an EMPTY ARRAY. Do NOT invent a risk to hit a quota.
 
 SUGGESTED ADR — full markdown with ALL these sections:
   ## Problem
@@ -92,17 +97,19 @@ SUGGESTED ADR — full markdown with ALL these sections:
   The specific choices made and the reasoning behind each
 
   ## Alternatives Considered
-  What else was evaluated, and why it was rejected
+  What else was evaluated, and why it was rejected. If nothing was evaluated (e.g., a straightforward docs addition), say so plainly instead of inventing alternatives.
 
   ## Consequences
-  Positive outcomes, negative tradeoffs, future implications, what to watch for
+  Positive outcomes, negative tradeoffs, future implications, what to watch for.
+  If this change is low-risk or purely additive (e.g., documentation, formatting, config), state that plainly — e.g. "No significant consequences; this is an additive documentation change with no runtime impact."
+  Do NOT speculate about unrelated systems (auth, database, infra, legacy flows) unless the diff actually touches files related to them.
 
   ## Status
   Accepted
 
 OUTPUT RULES:
 - Return ONLY raw JSON — no markdown fences, no backticks, no preamble, no explanation
-- decisions and risks must be arrays of plain strings
+- decisions and risks must be arrays of plain strings (risks may be an empty array)
 - suggestedADR must be a single string with \\n for newlines
 
 EXACT FORMAT:
