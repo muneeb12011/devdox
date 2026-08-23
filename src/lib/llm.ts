@@ -2,7 +2,7 @@
 import axios from "axios";
 import pRetry, { AbortError } from "p-retry";
 
-const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 
 interface LLMInput {
   prTitle: string;
