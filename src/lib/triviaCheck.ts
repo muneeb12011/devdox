@@ -1,3 +1,9 @@
+// Exposed for future config support — allows overriding the line-change
+// threshold per-repo once .devdox.yml lands.
+export function getLineChangeThreshold(): number {
+  return LINE_CHANGE_THRESHOLD;
+}
+
 // src/lib/triviaCheck.ts
 //
 // Decides whether a PR has enough real signal (tickets, meaningful code changes,
