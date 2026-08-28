@@ -13,6 +13,20 @@
 //   - octokit.pulls.listFiles response shape (filename, status, changes)
 //   - AnalysisSchema (empty arrays allowed for decisions/risks)
 
+// Allows a repo to override the default line-change threshold via
+// .devdox.yml in the future. Falls back to the built-in default if
+// no override is provided or the value is invalid.
+export function resolveLineChangeThreshold(overrideValue?: number): number {
+  if (
+    typeof overrideValue === "number" &&
+    Number.isFinite(overrideValue) &&
+    overrideValue > 0
+  ) {
+    return overrideValue;
+  }
+
+  return LINE_CHANGE_THRESHOLD;
+}
 interface FileChange {
   filename: string;
   status: string; // "added" | "modified" | "removed" | "renamed" etc.
